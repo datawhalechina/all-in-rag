@@ -8,6 +8,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_deepseek import ChatDeepSeek
+from zhipuai import ZhipuAI
 
 load_dotenv()
 
@@ -18,7 +19,7 @@ loader = UnstructuredMarkdownLoader(markdown_path)
 docs = loader.load()
 
 # 文本分块
-text_splitter = RecursiveCharacterTextSplitter()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = text_splitter.split_documents(docs)
 
 # 中文嵌入模型
@@ -46,11 +47,15 @@ prompt = ChatPromptTemplate.from_template("""请根据下面提供的上下文�
                                           )
 
 # 配置大语言模型
-llm = ChatDeepSeek(
-    model="deepseek-chat",
-    temperature=0.7,
-    max_tokens=4096,
-    api_key=os.getenv("DEEPSEEK_API_KEY")
+# llm = ChatDeepSeek(
+#     model="deepseek-chat",
+#     temperature=0.7,
+#     max_tokens=4096,
+#     api_key=os.getenv("DEEPSEEK_API_KEY")
+# )
+# 1. 初始化智谱AI客户端（对应原DeepSeek的ChatDeepSeek初始化）
+llm_client = ZhipuAI(
+    api_key=os.getenv("ZHIPU_API_KEY")  # 环境变量名替换为智谱的API密钥名
 )
 
 # 用户查询
@@ -60,5 +65,19 @@ question = "文中举了哪些例子？"
 retrieved_docs = vectorstore.similarity_search(question, k=3)
 docs_content = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
-answer = llm.invoke(prompt.format(question=question, context=docs_content))
+# answer = llm.invoke(prompt.format(question=question, context=docs_content))
+# 4. 调用智谱LLM生成答案（替换原llm.invoke）
+# --------------------------
+# 智谱要求通过「chat.completions.create」调用，且需用messages结构包裹prompt
+response = llm_client.chat.completions.create(
+    model="GLM-4-Flash",  # 智谱主流模型（可选glm-4/ glm-3-turbo，根据需求选择）
+    temperature=0.7,  # 与原DeepSeek的temperature含义一致（控制随机性，0.7保持不变）
+    max_tokens=4096,  # 最大生成token数（与原DeepSeek一致，智谱glm-4支持最大8192，可按需调整）
+    messages=[  # 智谱强制要求的对话结构：role为user，content为最终prompt
+        {"role": "user", "content": prompt.format(question=question, context=docs_content)}
+    ]
+)
+
+# 智谱返回结果在 response.choices[0].message.content 中
+answer = response.choices[0].message.content
 print(answer)

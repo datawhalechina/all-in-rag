@@ -1,7 +1,8 @@
 from unstructured.partition.auto import partition
 
 # PDF文件路径
-pdf_path = "../../data/C2/pdf/rag.pdf"
+# pdf_path = "../../data/C2/pdf/rag.pdf"
+pdf_path = '/workspaces/all-in-rag/data/C2/pdf/rag.pdf'
 
 # 使用Unstructured加载并解析PDF文档
 elements = partition(
