@@ -45,29 +45,31 @@
 
 这项评估借鉴了信息检索领域的多个经典指标：
 
-*   **核心评估指标：**
-    *   **上下文精确率 (Context Precision):** 衡量检索结果的准确性。计算在检索到的前 **k** 个文档中相关文档所占的比例，其中 **k** 是一个预设的数字（例如，k=3或k=5），代表评估的范围。高精确率意味着检索结果的噪声较少。
+* **核心评估指标：**
 
-        $$\text{Precision}@k = \frac{\text{检索到的}k\text{个结果中的相关文档数}}{k}$$
+  * **上下文精确率 (Context Precision):** 衡量检索结果的准确性。计算在检索到的前 **k** 个文档中相关文档所占的比例，其中 **k** 是一个预设的数字（例如，k=3或k=5），代表评估的范围。高精确率意味着检索结果的噪声较少。
 
-    *   **上下文召回率 (Context Recall):** 衡量检索结果的完整性。计算在检索到的前 **k** 个文档中，找到的相关文档占所有真实相关文档总数的比例。高召回率意味着系统能够成功找回大部分关键信息。
+    $$\text{Precision}@k = \frac{\text{检索到的}k\text{个结果中的相关文档数}}{k}$$
 
-        $$\text{Recall}@k = \frac{\text{检索到的}k\text{个结果中的相关文档数}}{\text{数据集中所有相关的文档总数}}$$
+  * **上下文召回率 (Context Recall):** 衡量检索结果的完整性。计算在检索到的前 **k** 个文档中，找到的相关文档占所有真实相关文档总数的比例。高召回率意味着系统能够成功找回大部分关键信息。
 
-    *   **F1分数 (F1-Score):** F1分数是精确率和召回率的调和平均数，它同时兼顾了这两个指标，在它们之间寻求平衡。当精确率和召回率都高时，F1分数也高。
+    $$\text{Recall}@k = \frac{\text{检索到的}k\text{个结果中的相关文档数}}{\text{数据集中所有相关的文档总数}}$$
 
-        $$F_1 = 2 \cdot \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+  * **F1分数 (F1-Score):** F1分数是精确率和召回率的调和平均数，它同时兼顾了这两个指标，在它们之间寻求平衡。当精确率和召回率都高时，F1分数也高。
 
-    *   **平均倒数排名 (MRR - Mean Reciprocal Rank):** 评估系统将第一个相关文档排在靠前位置的能力。对于一个查询，倒数排名是第一个相关文档排名的倒数。MRR是所有查询的倒数排名的平均值。该指标适用于用户通常只关心第一个正确答案的场景。
+    $$F_1 = 2 \cdot \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
 
-        $$\text{MRR} = \frac{1}{|Q|} \sum_{q=1}^{|Q|} \frac{1}{\text{rank}_q}$$
+  * **平均倒数排名 (MRR - Mean Reciprocal Rank):** 评估系统将第一个相关文档排在靠前位置的能力。对于一个查询，倒数排名是第一个相关文档排名的倒数。MRR是所有查询的倒数排名的平均值。该指标适用于用户通常只关心第一个正确答案的场景。
 
-        其中 `|Q|` 是查询总数，`rank_q` 是第 `q` 个查询的第一个相关文档的排名。
-    *   **平均准确率均值 (MAP - Mean Average Precision):** MAP是一个综合性指标，同时评估了检索结果的精确率和相关文档的排名。它先计算每个查询的平均精确率（AP），然后对所有查询的AP取平均值。AP本身是基于每个相关文档被检索到时的精确率计算的。
-    
-        $$\text{MAP} = \frac{1}{|Q|} \sum_{q=1}^{|Q|} \text{AP}(q)$$
+    $$\text{MRR} = \frac{1}{|Q|} \sum_{q=1}^{|Q|} \frac{1}{\text{rank}_q}$$
 
-        其中 `|Q|` 是查询总数，`AP(q)` 是第 `q` 个查询的平均精确率（Average Precision）。
+    其中 `|Q|` 是查询总数，`rank_q` 是第 `q` 个查询的第一个相关文档的排名。
+
+  * **平均准确率均值 (MAP - Mean Average Precision):** MAP是一个综合性指标，同时评估了检索结果的精确率和相关文档的排名。它先计算每个查询的平均精确率（AP），然后对所有查询的AP取平均值。AP本身是基于每个相关文档被检索到时的精确率计算的。
+
+    $$\text{MAP} = \frac{1}{|Q|} \sum_{q=1}^{|Q|} \text{AP}(q)$$
+
+    其中 `|Q|` 是查询总数，`AP(q)` 是第 `q` 个查询的平均精确率（Average Precision）。
 
 要计算上述所有指标，前提是拥有一个高质量的标注数据集，其中包含了查询和每个查询对应的“真实”相关文档。
 
@@ -98,37 +100,39 @@
 
 这类指标需要在数据集中包含一个或多个“标准答案”。它们通过计算生成答案与标准答案之间 n-gram（连续的n个词）的重叠程度来评估质量。
 
-*   **ROUGE (Recall-Oriented Understudy for Gisting Evaluation):** ROUGE关注的重点是 **召回率**，即标准答案中的词语有多少被生成答案所覆盖，因此常用于评估内容的 **完整性**。其常用变体包括计算n-gram的 `ROUGE-N` 和计算最长公共子序列的 `ROUGE-L`。
+* **ROUGE (Recall-Oriented Understudy for Gisting Evaluation):** ROUGE关注的重点是 **召回率**，即标准答案中的词语有多少被生成答案所覆盖，因此常用于评估内容的 **完整性**。其常用变体包括计算n-gram的 `ROUGE-N` 和计算最长公共子序列的 `ROUGE-L`。
 
-    $$\text{ROUGE-N} = \frac{\text{匹配的 } n\text{-gram 数量}}{\text{参考答案中 } n\text{-gram 的总数}}$$
+  $$\text{ROUGE-N} = \frac{\text{匹配的 } n\text{-gram 数量}}{\text{参考答案中 } n\text{-gram 的总数}}$$
 
-*   **BLEU (Bilingual Evalu ation Understudy):** BLEU侧重于评估 **精确率**，衡量生成的答案中有多少词是有效的（即在标准答案中出现过）。它还引入了长度惩罚机制，避免模型生成过短的句子，因此更适合评估答案的 **流畅度和准确性**。
+* **BLEU (Bilingual Evalu ation Understudy):** BLEU侧重于评估 **精确率**，衡量生成的答案中有多少词是有效的（即在标准答案中出现过）。它还引入了长度惩罚机制，避免模型生成过短的句子，因此更适合评估答案的 **流畅度和准确性**。
 
-    $$\text{BLEU} = \text{BP} \times \exp\left(\sum_{n=1}^{N} w_n \log p_n\right)$$
+  $$\text{BLEU} = \text{BP} \times \exp\left(\sum_{n=1}^{N} w_n \log p_n\right)$$
 
-    其中，`BP` 是长度惩罚因子，`p_n` 是修正后的n-gram精确率。
+  其中，`BP` 是长度惩罚因子，`p_n` 是修正后的n-gram精确率。
 
-*   **METEOR (Metric for Evaluation of Translation with Explicit ORdering):** 作为BLEU的改进版，METEOR同时考量 **精确率和召回率** 的调和平均，并通过词干和同义词匹配（如将'boat'和'ship'视为相关）来更好地捕捉语义相似性。其评估结果通常被认为与人类判断的相关性更高。
+* **METEOR (Metric for Evaluation of Translation with Explicit ORdering):** 作为BLEU的改进版，METEOR同时考量 **精确率和召回率** 的调和平均，并通过词干和同义词匹配（如将'boat'和'ship'视为相关）来更好地捕捉语义相似性。其评估结果通常被认为与人类判断的相关性更高。
 
-    $$F_{\text{mean}} = \frac{P \times R}{\alpha P + (1-\alpha)R}$$
+  $$F_{\text{mean}} = \frac{P \times R}{\alpha P + (1-\alpha)R}$$
 
-    $$\text{METEOR} = F_{\text{mean}} \times (1 - \text{Penalty})$$
+  $$\text{METEOR} = F_{\text{mean}} \times (1 - \text{Penalty})$$
 
-    其中 `P` 是精确率，`R` 是召回率，`Penalty` 是基于语序的惩罚项。
+  其中 `P` 是精确率，`R` 是召回率，`Penalty` 是基于语序的惩罚项。
 
 > **示例说明**
-> 
+>
 > 为了更直观地理解三者的区别，来看一个简单的例子。
-> 
+>
 > **假设：**
+>
 > *   **参考答案：** `狗 在 床 上面` (共5个词)
 > *   **生成答案：** `狗 在 床 上` (共4个词)
-> 
+>
 > **评估分析：**
+>
 > *   **ROUGE (召回率导向):** 从召回率的角度出发：“参考答案里的5个词，生成答案覆盖了多少？”——覆盖了4个。因此，它的召回率很高（ROUGE-1 为 4/5），得分会不错。ROUGE更关心“说全了没”。
-> 
+>
 > *   **BLEU (精确率导向):** 从精确率的角度进行评判：“生成答案里的4个词，有多少是有效的（在参考答案里）？”——全部有效，精确率很高。但它会发现生成答案比参考答案短，于是通过 **长度惩罚(Brevity Penalty)** 进行扣分。BLEU更关心“说对了没，以及长度是否合适”。
-> 
+>
 > *   **METEOR (综合平衡):** 同时计算精确率和召回率，并取一个调和平均。在这个例子里，词序是完全正确的，惩罚项为0。METEOR会在“说全”和“说对”之间找到一个最佳平衡点。
 
 #### 2.2.3 方法对比和总结
@@ -139,4 +143,4 @@
 
 [^1]: [*The RAG Triad of Metrics*](https://www.trulens.org/getting_started/core_concepts/rag_triad/).
 
-[^2]：[*如何评估 RAG 应用？*](https://zilliz.com.cn/blog/how-to-evaluate-rag-zilliz)
+[^2]: [*如何评估 RAG 应用？*](https://zilliz.com.cn/blog/how-to-evaluate-rag-zilliz).
