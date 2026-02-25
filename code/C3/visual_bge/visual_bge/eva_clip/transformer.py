@@ -10,7 +10,7 @@ from torch.nn import functional as F
 
 try:
     from timm.models.layers import trunc_normal_
-except:
+except Exception:
     from timm.layers import trunc_normal_
     
 from .rope import VisionRotaryEmbedding, VisionRotaryEmbeddingFast
@@ -20,7 +20,7 @@ if os.getenv('ENV_TYPE') == 'deepspeed':
     try:
         import deepspeed
         from deepspeed.runtime.activation_checkpointing.checkpointing import checkpoint
-    except:
+    except Exception:
         print("Please 'pip install deepspeed'")
         deepspeed = None
         from torch.utils.checkpoint import checkpoint

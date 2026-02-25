@@ -180,5 +180,5 @@ class SimpleKnowledgeBase:
         """清理资源"""
         try:
             self.client.drop_collection(self.collection_name)
-        except:
+        except Exception:
             pass 
