@@ -1,0 +1,42 @@
+<svg width="1400" height="640" viewBox="0 0 1400 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1400" y2="640" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#FFF7ED"/>
+    </linearGradient>
+    <filter id="sh5" x="0" y="0" width="1600" height="860" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0F172A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="640" fill="url(#bg5)"/>
+  <text x="60" y="66" font-size="40" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">第五道防线：实用工程技巧</text>
+  <text x="60" y="102" font-size="22" fill="#475569" font-family="'PingFang SC','Microsoft YaHei',sans-serif">补强系统稳定性与体验的四个低成本高收益实践</text>
+
+  <g filter="url(#sh5)">
+    <rect x="60" y="136" width="620" height="186" rx="18" fill="#FFFFFF" stroke="#FCD34D" stroke-width="2"/>
+    <text x="90" y="182" font-size="28" font-weight="700" fill="#1E293B" font-family="'PingFang SC','Microsoft YaHei',sans-serif">技巧1：边界描述文档</text>
+    <text x="90" y="220" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">明确覆盖/不覆盖主题与边界混淆场景</text>
+    <text x="90" y="252" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">作为意图分类 prompt 的“判尺”</text>
+  </g>
+
+  <g filter="url(#sh5)">
+    <rect x="720" y="136" width="620" height="186" rx="18" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="2"/>
+    <text x="750" y="182" font-size="28" font-weight="700" fill="#1E293B" font-family="'PingFang SC','Microsoft YaHei',sans-serif">技巧2：高频越界问题库</text>
+    <text x="750" y="220" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">收敛 badcase，FAQ 路由优先直返</text>
+    <text x="750" y="252" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">减少无效 RAG 调用和时延</text>
+  </g>
+
+  <g filter="url(#sh5)">
+    <rect x="60" y="352" width="620" height="186" rx="18" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="2"/>
+    <text x="90" y="398" font-size="28" font-weight="700" fill="#1E293B" font-family="'PingFang SC','Microsoft YaHei',sans-serif">技巧3：分级回答策略</text>
+    <text x="90" y="436" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">完全命中 / 部分命中 / 未命中</text>
+    <text x="90" y="468" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">让回答更“像人”也更可信</text>
+  </g>
+
+  <g filter="url(#sh5)">
+    <rect x="720" y="352" width="620" height="186" rx="18" fill="#FFFFFF" stroke="#93C5FD" stroke-width="2"/>
+    <text x="750" y="398" font-size="28" font-weight="700" fill="#1E293B" font-family="'PingFang SC','Microsoft YaHei',sans-serif">技巧4：引导用户重提问</text>
+    <text x="750" y="436" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">语义 gap 通过主题建议回到正确入口</text>
+    <text x="750" y="468" font-size="22" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">兼顾召回率与用户体验</text>
+  </g>
+</svg>

@@ -1,0 +1,31 @@
+<svg width="1400" height="620" viewBox="0 0 1400 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1400" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#ECFEFF"/>
+    </linearGradient>
+    <filter id="sh3" x="0" y="0" width="1600" height="800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0F172A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="620" fill="url(#bg3)"/>
+  <text x="60" y="66" font-size="40" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">第三道防线：生成环节约束</text>
+  <text x="60" y="102" font-size="22" fill="#475569" font-family="'PingFang SC','Microsoft YaHei',sans-serif">核心：不是“让模型别编”，而是让模型“只能基于证据回答”</text>
+
+  <g filter="url(#sh3)">
+    <rect x="60" y="136" width="1280" height="188" rx="20" fill="#FFFFFF" stroke="#67E8F9" stroke-width="2"/>
+    <text x="92" y="182" font-size="30" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">Prompt 约束模板（关键规则）</text>
+    <text x="92" y="228" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">1) 回答必须完全基于检索内容，不使用模型自有知识</text>
+    <text x="92" y="264" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">2) 无直接依据时明确拒答，不推测不编造</text>
+    <text x="92" y="300" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">3) 允许部分回答，并标注不确定部分</text>
+  </g>
+
+  <g filter="url(#sh3)">
+    <rect x="60" y="356" width="1280" height="216" rx="20" fill="#FFFFFF" stroke="#A7F3D0" stroke-width="2"/>
+    <text x="92" y="402" font-size="30" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">落地收益</text>
+    <text x="92" y="448" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• “不要使用你自己的知识”是关键约束</text>
+    <text x="92" y="484" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 给完整拒答模板，比“说不知道”更可控</text>
+    <text x="92" y="520" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 标注引用来源，既便于验证，也反向约束模型</text>
+    <text x="92" y="556" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 不能 100% 解决问题，但和前两道防线组合可显著降风险</text>
+  </g>
+</svg>

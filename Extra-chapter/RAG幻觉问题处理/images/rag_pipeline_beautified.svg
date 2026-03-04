@@ -1,0 +1,78 @@
+<svg width="1400" height="820" viewBox="0 0 1400 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FAFF"/>
+      <stop offset="1" stop-color="#EEF4FF"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="120" y1="70" x2="800" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="2000" height="1200" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#1E3A8A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1400" height="820" fill="url(#bg)"/>
+
+  <text x="120" y="80" font-size="42" font-weight="700" fill="url(#titleGrad)" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">RAG 链路拆解（严肃场景防幻觉）</text>
+  <text x="120" y="116" font-size="22" fill="#475569" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">从“能回答”到“有依据才回答”</text>
+
+  <!-- Start node -->
+  <g filter="url(#shadow)">
+    <rect x="120" y="160" rx="18" ry="18" width="1160" height="72" fill="#0F172A"/>
+    <text x="700" y="205" text-anchor="middle" font-size="34" font-weight="700" fill="#F8FAFC" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">用户提问</text>
+  </g>
+
+  <!-- Cards -->
+  <g filter="url(#shadow)">
+    <rect x="120" y="270" rx="20" ry="20" width="1160" height="84" fill="#FFFFFF" stroke="#93C5FD" stroke-width="2"/>
+    <circle cx="178" cy="312" r="23" fill="#DBEAFE"/>
+    <text x="178" y="320" text-anchor="middle" font-size="26" font-weight="700" fill="#1D4ED8" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">1</text>
+    <text x="230" y="321" font-size="34" font-weight="600" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">Query处理（改写、意图识别）</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="382" rx="20" ry="20" width="1160" height="84" fill="#FFFFFF" stroke="#86EFAC" stroke-width="2"/>
+    <circle cx="178" cy="424" r="23" fill="#DCFCE7"/>
+    <text x="178" y="432" text-anchor="middle" font-size="26" font-weight="700" fill="#16A34A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">2</text>
+    <text x="230" y="433" font-size="34" font-weight="600" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">检索（从知识库召回相关文档片段）</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="494" rx="20" ry="20" width="1160" height="84" fill="#FFFFFF" stroke="#FCD34D" stroke-width="2"/>
+    <circle cx="178" cy="536" r="23" fill="#FEF3C7"/>
+    <text x="178" y="544" text-anchor="middle" font-size="26" font-weight="700" fill="#D97706" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">3</text>
+    <text x="230" y="545" font-size="34" font-weight="600" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">相关性判断（召回内容真的相关吗？）</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="606" rx="20" ry="20" width="1160" height="84" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="2"/>
+    <circle cx="178" cy="648" r="23" fill="#EDE9FE"/>
+    <text x="178" y="656" text-anchor="middle" font-size="26" font-weight="700" fill="#7C3AED" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">4</text>
+    <text x="230" y="657" font-size="34" font-weight="600" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">生成（基于检索证据回答问题）</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="120" y="718" rx="20" ry="20" width="1160" height="84" fill="#FFFFFF" stroke="#F9A8D4" stroke-width="2"/>
+    <circle cx="178" cy="760" r="23" fill="#FCE7F3"/>
+    <text x="178" y="768" text-anchor="middle" font-size="26" font-weight="700" fill="#DB2777" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">5</text>
+    <text x="230" y="769" font-size="34" font-weight="600" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif">输出校验（答案是否有依据？）</text>
+  </g>
+
+  <!-- Arrows -->
+  <g stroke="#64748B" stroke-width="4" stroke-linecap="round">
+    <line x1="700" y1="234" x2="700" y2="258"/>
+    <line x1="700" y1="354" x2="700" y2="370"/>
+    <line x1="700" y1="466" x2="700" y2="482"/>
+    <line x1="700" y1="578" x2="700" y2="594"/>
+    <line x1="700" y1="690" x2="700" y2="706"/>
+  </g>
+  <g fill="#64748B">
+    <path d="M700 262 L692 250 H708 Z"/>
+    <path d="M700 374 L692 362 H708 Z"/>
+    <path d="M700 486 L692 474 H708 Z"/>
+    <path d="M700 598 L692 586 H708 Z"/>
+    <path d="M700 710 L692 698 H708 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg width="1400" height="540" viewBox="0 0 1400 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1400" y2="540" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <filter id="sh4" x="0" y="0" width="1600" height="760" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0F172A" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="540" fill="url(#bg4)"/>
+  <text x="60" y="66" font-size="40" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">第四道防线：输出校验</text>
+  <text x="60" y="102" font-size="22" fill="#475569" font-family="'PingFang SC','Microsoft YaHei',sans-serif">高风险场景可选：生成后再做“事实依据审计”</text>
+
+  <g filter="url(#sh4)">
+    <rect x="60" y="138" width="1280" height="152" rx="20" fill="#FFFFFF" stroke="#C4B5FD" stroke-width="2"/>
+    <text x="92" y="184" font-size="28" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">校验输入</text>
+    <text x="92" y="224" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">参考资料：{retrieved_chunks}</text>
+    <text x="92" y="260" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">系统回答：{generated_answer}</text>
+  </g>
+
+  <g filter="url(#sh4)">
+    <rect x="60" y="318" width="1280" height="180" rx="20" fill="#FFFFFF" stroke="#F9A8D4" stroke-width="2"/>
+    <text x="92" y="364" font-size="28" font-weight="700" fill="#0F172A" font-family="'PingFang SC','Microsoft YaHei',sans-serif">校验输出与处置</text>
+    <text x="92" y="404" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 全部有据可查 -> 通过</text>
+    <text x="92" y="440" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 发现无依据陈述 -> 删改 / 整体打回 / 标注不确定部分</text>
+    <text x="92" y="476" font-size="24" fill="#334155" font-family="'PingFang SC','Microsoft YaHei',sans-serif">• 成本最高，但在医疗/法律等高风险场景值得</text>
+  </g>
+</svg>
