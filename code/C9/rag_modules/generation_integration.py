@@ -4,36 +4,38 @@
 
 import logging
 import os
+import sys
 import time
 from typing import List
 
-from openai import OpenAI
 from langchain_core.documents import Document
+
+# 将 utils 目录加入路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+from utils.llm_provider import create_openai_client
 
 logger = logging.getLogger(__name__)
 
 class GenerationIntegrationModule:
     """生成集成模块 - 负责答案生成"""
 
-    def __init__(self, model_name: str = "kimi-k2-0711-preview", temperature: float = 0.1, max_tokens: int = 2048):
+    def __init__(self, model_name: str = "", temperature: float = 0.1, max_tokens: int = 2048, provider: str = ""):
         """
         初始化生成集成模块
+
+        Args:
+            model_name: 模型名称，留空则使用供应商默认模型
+            temperature: 生成温度
+            max_tokens: 最大token数
+            provider: LLM 供应商（moonshot/deepseek/minimax/openai），留空则自动检测
         """
-        self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens
-        
-        # 初始化OpenAI客户端（使用Moonshot API）
-        api_key = os.getenv("MOONSHOT_API_KEY")
-        if not api_key:
-            raise ValueError("请设置 MOONSHOT_API_KEY 环境变量")
-        
-        self.client = OpenAI(
-            api_key=api_key,
-            base_url="https://api.moonshot.cn/v1"
-        )
 
-        logger.info(f"生成模块初始化完成，模型: {model_name}")
+        self.client, default_model = create_openai_client(provider=provider or None)
+        self.model_name = model_name or default_model
+
+        logger.info(f"生成模块初始化完成，模型: {self.model_name}")
 
     def generate_adaptive_answer(self, question: str, documents: List[Document]) -> str:
         """

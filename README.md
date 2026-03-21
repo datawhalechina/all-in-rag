@@ -79,6 +79,31 @@
 - 了解基本的LLM概念（推荐但非必需）
 - 具备基础的Linux命令行操作能力
 
+## 支持的 LLM 供应商
+
+本项目通过统一的供应商抽象层（`code/utils/llm_provider.py`）支持多种 LLM 供应商，只需设置对应的环境变量即可切换：
+
+| 供应商 | 环境变量 | 默认模型 | API 地址 |
+|--------|----------|----------|----------|
+| [Moonshot (Kimi)](https://www.moonshot.cn/) | `MOONSHOT_API_KEY` | kimi-k2-0711-preview | https://api.moonshot.cn/v1 |
+| [DeepSeek](https://www.deepseek.com/) | `DEEPSEEK_API_KEY` | deepseek-chat | https://api.deepseek.com |
+| [MiniMax](https://www.minimaxi.com/) | `MINIMAX_API_KEY` | MiniMax-M2.5 | https://api.minimax.io/v1 |
+| [OpenAI](https://openai.com/) | `OPENAI_API_KEY` | gpt-4o-mini | https://api.openai.com/v1 |
+
+**快速切换供应商：**
+
+```bash
+# 方式一：设置 API Key 后自动检测（按 Moonshot > DeepSeek > MiniMax > OpenAI 顺序）
+export MINIMAX_API_KEY="your-api-key"
+
+# 方式二：通过 LLM_PROVIDER 环境变量显式指定
+export LLM_PROVIDER="minimax"
+export MINIMAX_API_KEY="your-api-key"
+
+# 方式三：在配置文件中指定（C8/C9 项目）
+# config.py 中设置 llm_provider="minimax", llm_model="MiniMax-M2.5"
+```
+
 ## 项目亮点
 
 1. **体系化学习路径**：从基础概念到高级应用，构建完整的RAG技术学习体系

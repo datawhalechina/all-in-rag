@@ -87,7 +87,8 @@ class AdvancedGraphRAGSystem:
             self.generation_module = GenerationIntegrationModule(
                 model_name=self.config.llm_model,
                 temperature=self.config.temperature,
-                max_tokens=self.config.max_tokens
+                max_tokens=self.config.max_tokens,
+                provider=self.config.llm_provider,
             )
             
             # 4. 传统混合检索模块

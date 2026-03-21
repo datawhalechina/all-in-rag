@@ -23,7 +23,8 @@ class GraphRAGConfig:
 
     # 模型配置
     embedding_model: str = "BAAI/bge-small-zh-v1.5"
-    llm_model: str = "kimi-k2-0711-preview"
+    llm_provider: str = ""  # LLM 供应商（moonshot/deepseek/minimax/openai），留空则自动检测
+    llm_model: str = ""  # 模型名称，留空则使用供应商默认模型
 
     # 检索配置（LightRAG Round-robin策略）
     top_k: int = 5
@@ -41,12 +42,12 @@ class GraphRAGConfig:
         """初始化后的处理"""
         # LightRAG使用Round-robin策略，无需权重验证
         pass
-    
+
     @classmethod
     def from_dict(cls, config_dict: Dict[str, Any]) -> 'GraphRAGConfig':
         """从字典创建配置对象"""
         return cls(**config_dict)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {
@@ -59,6 +60,7 @@ class GraphRAGConfig:
             'milvus_collection_name': self.milvus_collection_name,
             'milvus_dimension': self.milvus_dimension,
             'embedding_model': self.embedding_model,
+            'llm_provider': self.llm_provider,
             'llm_model': self.llm_model,
             'top_k': self.top_k,
 
@@ -70,4 +72,4 @@ class GraphRAGConfig:
         }
 
 # 默认配置实例
-DEFAULT_CONFIG = GraphRAGConfig() 
+DEFAULT_CONFIG = GraphRAGConfig()

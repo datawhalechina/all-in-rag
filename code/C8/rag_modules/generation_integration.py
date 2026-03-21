@@ -3,50 +3,52 @@
 """
 
 import os
+import sys
 import logging
 from typing import List
 
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-from langchain_community.chat_models.moonshot import MoonshotChat
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
+
+# 将 utils 目录加入路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+from utils.llm_provider import create_llm
 
 logger = logging.getLogger(__name__)
 
 class GenerationIntegrationModule:
     """生成集成模块 - 负责LLM集成和回答生成"""
-    
-    def __init__(self, model_name: str = "kimi-k2-0711-preview", temperature: float = 0.1, max_tokens: int = 2048):
+
+    def __init__(self, model_name: str = "", temperature: float = 0.1, max_tokens: int = 2048, provider: str = ""):
         """
         初始化生成集成模块
-        
+
         Args:
-            model_name: 模型名称
+            model_name: 模型名称，留空则使用供应商默认模型
             temperature: 生成温度
             max_tokens: 最大token数
+            provider: LLM 供应商（moonshot/deepseek/minimax/openai），留空则自动检测
         """
         self.model_name = model_name
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.provider = provider
         self.llm = None
         self.setup_llm()
-    
+
     def setup_llm(self):
-        """初始化大语言模型"""
-        logger.info(f"正在初始化LLM: {self.model_name}")
+        """初始化大语言模型（支持多供应商）"""
+        logger.info(f"正在初始化LLM: provider={self.provider or '自动检测'}, model={self.model_name or '默认'}")
 
-        api_key = os.getenv("MOONSHOT_API_KEY")
-        if not api_key:
-            raise ValueError("请设置 MOONSHOT_API_KEY 环境变量")
-
-        self.llm = MoonshotChat(
-            model=self.model_name,
+        self.llm = create_llm(
+            provider=self.provider or None,
+            model=self.model_name or None,
             temperature=self.temperature,
             max_tokens=self.max_tokens,
-            moonshot_api_key=api_key
         )
-        
+
         logger.info("LLM初始化完成")
     
     def generate_basic_answer(self, query: str, context_docs: List[Document]) -> str:
