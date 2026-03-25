@@ -1,5 +1,17 @@
 import os
+import logging
+import sys
+import nltk
 from dotenv import load_dotenv
+
+# --- 新增：开启日志，让你看到程序每一步在干什么 ---
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+
+# --- 新增：确保 NLTK 数据已下载 ---
+nltk.download('punkt')
+nltk.download('punkt_tab')
+
 from llama_index.core.node_parser import SentenceWindowNodeParser, SentenceSplitter
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.llms.openai_like import OpenAILike
