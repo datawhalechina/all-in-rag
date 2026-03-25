@@ -1,9 +1,12 @@
 import os
+from dotenv import load_dotenv
 from llama_index.core.node_parser import SentenceWindowNodeParser, SentenceSplitter
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.postprocessor import MetadataReplacementPostProcessor
+
+load_dotenv()
 
 # 1. 配置模型
 Settings.llm = OpenAILike(
