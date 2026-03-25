@@ -13,7 +13,7 @@ Settings.llm = OpenAILike(
     model="glm-4.7-flash-free",
     temperature=0.1,
     api_key=os.getenv("AIHUBMIX_API_KEY"),
-    base_url="https://aihubmix.com/v1",
+    api_base="https://aihubmix.com/v1",
      is_chat_model=True
 )
 Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en")
