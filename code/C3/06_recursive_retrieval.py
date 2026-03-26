@@ -9,8 +9,18 @@ from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import Settings
+import mistralai
 
 load_dotenv()
+
+print("mistralai 库所在的实际路径是:")
+print(os.path.abspath(mistralai.__file__))
+
+try:
+    from mistralai import Mistral
+    print("成功！找到了 Mistral 类。")
+except ImportError as e:
+    print(f"失败！报错信息是: {e}")
 
 # 1. 配置模型
 Settings.llm = OpenAILike(
