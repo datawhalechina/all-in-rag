@@ -1,3 +1,16 @@
+import sys
+from unittest.mock import MagicMock
+
+# 强行注入一个假的 mistralai 模块，防止 llama_index.experimental 报错
+try:
+    import mistralai
+    from mistralai import Mistral
+except (ImportError, AttributeError):
+    # 如果找不到，就伪造一个，确保后续 LlamaIndex 加载时不崩溃
+    mock_mistral = MagicMock()
+    sys.modules["mistralai"] = mock_mistral
+    print("已绕过 mistralai 导入冲突")
+
 import os
 from dotenv import load_dotenv
 import pandas as pd
