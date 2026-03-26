@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from dotenv import load_dotenv
 from llama_index.core import VectorStoreIndex
 from llama_index.core.schema import IndexNode
 from llama_index.experimental.query_engine import PandasQueryEngine
