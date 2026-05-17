@@ -201,6 +201,8 @@ class HybridRetrievalModule:
                 max_tokens=500
             )
             
+            if not response.choices or response.choices[0].message is None:
+                raise ValueError("LLM returned empty or filtered response")
             result = json.loads(response.choices[0].message.content.strip())
             entity_keywords = result.get("entity_keywords", [])
             topic_keywords = result.get("topic_keywords", [])
