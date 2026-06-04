@@ -1,0 +1,21 @@
+[project]
+name = "multimodal-embedding-omni-practice"
+version = "0.1.0"
+description = "Jina v5-omni multimodal embedding practice demo"
+requires-python = ">=3.10"
+dependencies = [
+    "av>=17.0.0",
+    "librosa>=0.11.0",
+    "numpy>=1.26.0",
+    "pillow>=10.0.0",
+    "pypdf>=6.0.0",
+    "pypdfium2>=5.0.0",
+    "sentence-transformers>=5.4.0",
+    "soundfile>=0.12.0",
+    "torch>=2.3.0",
+    "torchvision>=0.20.0",
+    "transformers>=4.52.0",
+]
+
+[tool.uv]
+package = false

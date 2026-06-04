@@ -13,6 +13,7 @@ neo4j>=5.0.0
 
 pymilvus==2.5.11
 rank-bm25>=0.2.2
+jieba>=0.42.1
 
 lazy_loader==0.4
 huggingface-hub>=0.33.4

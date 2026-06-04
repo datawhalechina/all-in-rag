@@ -28,6 +28,11 @@ class GraphRAGConfig:
     # 检索配置（LightRAG Round-robin策略）
     top_k: int = 5
 
+    # 父文档检索配置
+    enable_parent_doc_retrieval: bool = False  # 默认 False，不做父文档回填，直接把chunk当作上下文，有可能会出现步骤不全问题
+    parent_doc_top_n: int = 3                   # 仅 RRF 分前 N 名做父文档替换
+    parent_doc_max_chars: int = 4000            # 每篇父文档字符上限（兜底）
+
     # 生成配置
     temperature: float = 0.1
     max_tokens: int = 2048
@@ -61,6 +66,9 @@ class GraphRAGConfig:
             'embedding_model': self.embedding_model,
             'llm_model': self.llm_model,
             'top_k': self.top_k,
+            'enable_parent_doc_retrieval': self.enable_parent_doc_retrieval,
+            'parent_doc_top_n': self.parent_doc_top_n,
+            'parent_doc_max_chars': self.parent_doc_max_chars,
 
             'temperature': self.temperature,
             'max_tokens': self.max_tokens,

@@ -207,7 +207,7 @@ all-in-rag/
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=datawhalechina/all-in-rag&type=Date)](https://star-history.com/#datawhalechina/all-in-rag&Date)
+[![all-in-rag stats](https://datawhalechina.github.io/members-visualization/badges/all-in-rag.png)](https://datawhalechina.github.io/members-visualization/repo-badge?repo=all-in-rag)
 
 <div align="center">
   <p>如果这个项目对你有帮助，请给我们一个 ⭐️</p>

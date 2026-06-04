@@ -252,12 +252,16 @@ flowchart TD
     subgraph HybridFlow ["🔍 传统混合检索流程（保底）"]
         DUAL_RETRIEVAL["🎯 双层检索<br/>实体级+主题级"]
         VECTOR_SEARCH["📊 增强向量检索<br/>语义相似度匹配"]
-        RRF_MERGE["⚖️ RRF轮询融合<br/>公平合并不同结果"]
+        BM25_SEARCH["🔤 BM25关键词检索<br/>jieba分词+停用词过滤"]
+        RRF_MERGE["⚖️ RRF融合<br/>Reciprocal Rank Fusion<br/>三路排名加权求和"]
+        PARENT_DOC["📄 父文档回填（可选）<br/>chunk→整篇父菜谱<br/>保证上下文完整性"]
         INTERNAL_FALLBACK["🔧 内部降级机制<br/>关键词提取失败→简单分词<br/>图索引不足→Neo4j补充<br/>Neo4j失败→静默失败"]
         
         DUAL_RETRIEVAL --> RRF_MERGE
         VECTOR_SEARCH --> RRF_MERGE
+        BM25_SEARCH --> RRF_MERGE
         INTERNAL_FALLBACK --> RRF_MERGE
+        RRF_MERGE --> PARENT_DOC
     end
     
     subgraph GraphRAGFlow ["🕸️ 图RAG检索流程（高级复杂）"]
@@ -340,8 +344,8 @@ flowchart TD
 - **特点**：使用BGE-small-zh-v1.5模型，512维向量空间
 
 #### 混合检索模块 (HybridRetrievalModule)
-- **功能**：传统的混合检索策略，结合向量检索和图扩展
-- **特点**：双层检索（实体级+主题级），RRF轮询融合
+- **功能**：传统的混合检索策略，三路召回（双层检索+向量检索+BM25）经 RRF 融合
+- **特点**：双层检索（实体级+主题级），BM25关键词检索（jieba分词），RRF排名融合，可选父文档回填
 
 #### 图RAG检索模块 (GraphRAGRetrieval)
 - **功能**：基于图结构的高级检索，支持多跳推理和子图提取

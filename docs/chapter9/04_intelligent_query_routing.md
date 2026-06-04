@@ -206,55 +206,54 @@ def _combined_search(self, query: str, top_k: int) -> List[Document]:
 
 > [混合检索模块代码](https://github.com/datawhalechina/all-in-rag/blob/main/code/C9/rag_modules/hybrid_retrieval.py)
 
-适用于简单查询，结合双层检索和向量检索：
+适用于简单查询，结合双层检索、向量检索和BM25关键词检索，通过RRF融合三路结果：
 
 ```python
 class HybridRetrievalModule:
     def hybrid_search(self, query: str, top_k: int = 5) -> List[Document]:
         """
-        混合检索：使用Round-robin轮询合并策略
-        公平轮询合并不同检索结果，不使用权重配置
+        混合检索：三路召回（图键值双层 + 向量 + BM25）→ RRF 融合
         """
-        logger.info(f"开始混合检索: {query}")
+        logger.info(f"开始混合检索（dual + vector + bm25, RRF k={_RRF_K}）: {query}")
+
+        # 每路给 RRF 留够候选空间，否则三路各自前 top_k 容易没交集，融合退化
+        candidate_k = max(top_k * 2, 10)
 
         # 1. 双层检索（实体+主题检索）
-        dual_docs = self.dual_level_retrieval(query, top_k)
+        dual_docs = self.dual_level_retrieval(query, candidate_k)
 
         # 2. 增强向量检索
-        vector_docs = self.vector_search_enhanced(query, top_k)
+        vector_docs = self.vector_search_enhanced(query, candidate_k)
 
-        # 3. Round-robin轮询合并
-        merged_docs = []
-        seen_doc_ids = set()
-        max_len = max(len(dual_docs), len(vector_docs))
+        # 3. BM25 关键词检索（jieba 分词 + 停用词过滤）
+        bm25_docs = self.bm25_search(query, candidate_k)
 
-        # Round-robin策略：交替从两个结果列表中取文档
-        # 这种方法确保了不同检索方法的结果都能得到公平的展示机会
-        for i in range(max_len):
-            # 先添加双层检索结果
-            if i < len(dual_docs):
-                doc = dual_docs[i]
-                doc_id = doc.metadata.get("node_id", hash(doc.page_content))
-                if doc_id not in seen_doc_ids:
-                    seen_doc_ids.add(doc_id)
-                    doc.metadata["search_method"] = "dual_level"
-                    doc.metadata["final_score"] = doc.metadata.get("relevance_score", 0.0)
-                    merged_docs.append(doc)
+        # 标记每路来源
+        for d in dual_docs:
+            d.metadata.setdefault("search_method", "dual_level")
+        for d in vector_docs:
+            d.metadata["search_method"] = "vector"
 
-            # 再添加向量检索结果
-            if i < len(vector_docs):
-                doc = vector_docs[i]
-                doc_id = doc.metadata.get("node_id", hash(doc.page_content))
-                if doc_id not in seen_doc_ids:
-                    seen_doc_ids.add(doc_id)
-                    doc.metadata["search_method"] = "vector"
-                    doc.metadata["final_score"] = doc.metadata.get("relevance_score", 0.0)
-                    merged_docs.append(doc)
+        # 4. RRF 融合三路结果
+        final_docs = self._rrf_merge(
+            ranked_lists=[
+                ("dual_level", dual_docs),
+                ("vector", vector_docs),
+                ("bm25", bm25_docs),
+            ],
+            top_k=top_k,
+        )
 
-        return merged_docs[:top_k]
+        # 5. 可选：父文档回填（命中 chunk → 整篇父菜谱，保证上下文完整性）
+        if getattr(self.config, "enable_parent_doc_retrieval", False):
+            final_docs = self._attach_parent_documents(final_docs)
+
+        return final_docs
 ```
 
-**Round-robin轮询合并原理**：Round-robin（轮询）是一种公平调度算法，在RAG系统中用于融合多个检索结果。其核心是按顺序轮流从不同的结果列表中选择文档，而不是基于分数权重进行合并。这种方法确保了每种检索策略的结果都能得到公平的展示机会，避免了某种方法因排序靠前而被过度选择的问题。相比复杂的加权融合，Round-robin实现简单且稳定，无需调优权重参数，自然保持了结果的多样性。
+**RRF（Reciprocal Rank Fusion）融合原理**：RRF 是一种经典的多路检索结果融合算法（Cormack et al. 2009），其核心公式为 `score(d) = Σ 1/(k + rank_i(d))`，其中 `k` 为平滑常数（默认60）。每个文档在各检索通道中的排名被转化为分数后求和，在三路检索中均获得较高排名的文档会被显著提升，实现"三路共识"优先。RRF 按 `node_id` 对同一菜谱的多个 chunk 去重，只保留最佳排名的 chunk 作为代表。
+
+**父文档回填（Parent Document Retrieval）**：由于文档按 `\n## ` 二级标题切分，长菜谱的步骤段（`### 第i步`）可能被分到非首个 chunk，而 RRF 按 `node_id` 去重后每道菜只保留一个胜出 chunk——这导致步骤类问题的上下文可能缺失关键信息。开启 `enable_parent_doc_retrieval` 后，RRF 去重后的前 N 条结果会被替换为完整的父菜谱文档（超长截断兜底），从"chunk 命中"变为"整篇菜谱进上下文"，确保回答的完整性。该功能默认关闭，不影响原有行为。
 
 ### 2.2 图RAG检索策略
 

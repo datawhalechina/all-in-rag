@@ -195,7 +195,7 @@ We welcome all forms of contributions, including but not limited to:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=datawhalechina/all-in-rag&type=Date)](https://star-history.com/#datawhalechina/all-in-rag&Date)
+[![all-in-rag stats](https://datawhalechina.github.io/members-visualization/badges/all-in-rag.png)](https://datawhalechina.github.io/members-visualization/repo-badge?repo=all-in-rag)
 
 <div align="center">
   <p>If this project helps you, please give us a ⭐️</p>
