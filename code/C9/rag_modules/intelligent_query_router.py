@@ -7,6 +7,7 @@
 
 import json
 import logging
+import hashlib
 from typing import List, Dict, Tuple, Any, Optional
 from dataclasses import dataclass
 from enum import Enum
@@ -225,7 +226,7 @@ class IntelligentQueryRouter:
             # 先添加图RAG结果（通常质量更高）
             if i < len(graph_docs):
                 doc = graph_docs[i]
-                content_hash = hash(doc.page_content[:100])
+                content_hash = hashlib.md5(doc.page_content[:100].encode('utf-8')).hexdigest()
                 if content_hash not in seen_contents:
                     seen_contents.add(content_hash)
                     doc.metadata["search_source"] = "graph_rag"
@@ -234,7 +235,7 @@ class IntelligentQueryRouter:
             # 再添加传统检索结果
             if i < len(traditional_docs):
                 doc = traditional_docs[i]
-                content_hash = hash(doc.page_content[:100])
+                content_hash = hashlib.md5(doc.page_content[:100].encode('utf-8')).hexdigest()
                 if content_hash not in seen_contents:
                     seen_contents.add(content_hash)
                     doc.metadata["search_source"] = "traditional"

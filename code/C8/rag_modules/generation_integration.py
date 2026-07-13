@@ -397,5 +397,5 @@ class GenerationIntegrationModule:
             
             context_parts.append(doc_text)
             current_length += len(doc_text)
-        
-        return "\n" + "="*50 + "\n".join(context_parts)
+        divider = "\n" + "="*50 + "\n"
+        return divider + divider.join(context_parts)

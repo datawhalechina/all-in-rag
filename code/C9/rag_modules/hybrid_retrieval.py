@@ -6,6 +6,7 @@
 
 import json
 import logging
+import hashlib
 from typing import List, Dict, Tuple, Any, Optional
 from dataclasses import dataclass
 
@@ -662,7 +663,7 @@ class HybridRetrievalModule:
                 node_id = doc.metadata.get("node_id")
                 doc_id = (
                     str(node_id) if node_id is not None
-                    else f"hash::{hash(doc.page_content[:200])}"
+                    else f"hash::{hashlib.md5(doc.page_content[:200].encode('utf-8')).hexdigest()}"
                 )
 
                 if doc_id not in best_rank_per_source:

@@ -543,7 +543,7 @@ class GraphRAGRetrieval:
             relationships = []
             for rel in record["rels"]:
                 relationships.append({
-                    "type": type(rel).__name__,
+                    "type": rel.type,
                     "properties": dict(rel)
                 })
             
