@@ -332,8 +332,11 @@ if not image_list:
 dim = len(encoder.encode_image(image_list[0]))
 
 fields = [
+    # 主键字段，设置自增 (auto_id=True)
     FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
+    # 向量字段，维度与模型的输出向量维度一致
     FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=dim),
+    # 存储原图像路径的标量字段，最大长度限制 512 字符
     FieldSchema(name="image_path", dtype=DataType.VARCHAR, max_length=512),
 ]
 
@@ -458,6 +461,7 @@ search_results = milvus_client.search(
     data=[query_vector],
     output_fields=["image_path"],
     limit=5,
+    # ef: 搜索时的节点遍历深度，值越大召回率越高但耗时越长
     search_params={"metric_type": "COSINE", "params": {"ef": 128}}
 )[0]
 
@@ -473,7 +477,7 @@ for i, hit in enumerate(search_results):
 ```bash
 --> 正在 'multimodal_demo' 中执行检索
 检索结果:
-  Top 1: ID=459243798403756667, 距离=0.9411, 路径='../../data/C3\dragon\dragon01.png'
+  Top 1: ID=459243798403756667, 距离=0.9411, 路径='../../data/C3\dragon\query.png'
   Top 2: ID=459243798403756668, 距离=0.5818, 路径='../../data/C3\dragon\dragon02.png'
   Top 3: ID=459243798403756671, 距离=0.5731, 路径='../../data/C3\dragon\dragon05.png'
   Top 4: ID=459243798403756670, 距离=0.4894, 路径='../../data/C3\dragon\dragon04.png'
@@ -482,13 +486,15 @@ for i, hit in enumerate(search_results):
 
 这段输出展示了与图文组合查询最相似的5个**实体 (Entity)**。`distance` 字段代表了**余弦相似度**，值越接近 1 表示越相似。可以看到，`Top 1` 结果正是查询图片本身，其相似度得分最高（0.9411），这说明了检索的有效性。其余结果也都是龙的图片，并按相似度从高到低精确排列。
 
+> **为什么查询图片本身，其余弦相似度不是 1.0 而是 0.9411 呢？**
+> 在插入数据时，数据库里存放的是通过 `encode_image` 得到的**纯图像嵌入向量**（只包含视觉特征）；而在检索时，输入的查询向量是通过 `encode_query` 生成的**图文联合嵌入向量**（融合了文本“一条龙”的信息和图像的特征）。由于查询向量被文本语义进行了“偏置”，所以它与数据库中的纯视觉图像向量之间会有细微的特征差异。
+
 ### 4.6 可视化与清理
 
 最后，将检索到的图片路径用于可视化，生成一张直观的结果对比图。在完成所有操作后，应该释放 Milvus 中的资源，包括从内存中卸载 Collection 和删除整个 Collection。
 
 ```python
 # 8. 可视化与清理
-print(f"\n--> 正在可视化结果并清理资源")
 if not retrieved_images:
     print("没有检索到任何图像。")
 else:

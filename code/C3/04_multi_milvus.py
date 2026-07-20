@@ -80,8 +80,11 @@ if not image_list:
 dim = len(encoder.encode_image(image_list[0]))
 
 fields = [
+    # 主键字段，设置自增 (auto_id=True)
     FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
+    # 向量字段，维度与模型的输出向量维度一致
     FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=dim),
+    # 存储原图像路径的标量字段，最大长度限制 512 字符
     FieldSchema(name="image_path", dtype=DataType.VARCHAR, max_length=512),
 ]
 
