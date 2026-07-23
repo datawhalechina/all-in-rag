@@ -11,6 +11,13 @@ from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
+aihubmix_api_key = os.getenv("AIHUBMIX_API_KEY")
+if not aihubmix_api_key:
+    raise ValueError(
+        "未检测到 AIHUBMIX_API_KEY，请先参考 docs/chapter1/02_preparation.md "
+        "配置 AIHubmix API 密钥。"
+    )
+
 markdown_path = "../../data/C1/markdown/easy-rl-chapter1.md"
 
 # 加载本地markdown文件
@@ -52,7 +59,7 @@ llm = ChatOpenAI(
     model="glm-4.7-flash-free",
     temperature=0.7,
     max_tokens=4096,
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=aihubmix_api_key,
     base_url="https://aihubmix.com/v1"
 )
 
