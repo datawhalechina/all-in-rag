@@ -171,18 +171,35 @@ def fix_sql(self, original_sql: str, error_message: str, knowledge_results: List
 ```python
 def _build_context(self, knowledge_results: List[Dict[str, Any]]) -> str:
     """构建上下文信息"""
+    context = ""
+
     # 按类型分组
     ddl_info = []        # 表结构信息
     qsql_examples = []   # 查询示例
     descriptions = []    # 表描述信息
-    
+
+    for result in knowledge_results:
+        if result["type"] == "ddl":
+            ddl_info.append(result["content"])
+        elif result["type"] == "qsql":
+            qsql_examples.append(result["content"])
+        elif result["type"] == "description":
+            descriptions.append(result["content"])
+
     # 分层次组织信息：结构 → 描述 → 示例
     if ddl_info:
         context += "=== 表结构信息 ===\n"
+        context += "\n".join(ddl_info) + "\n\n"
+
     if descriptions:
         context += "=== 表和字段描述 ===\n"
+        context += "\n".join(descriptions) + "\n\n"
+
     if qsql_examples:
         context += "=== 查询示例 ===\n"
+        context += "\n".join(qsql_examples) + "\n\n"
+
+    return context
 ```
 
 
