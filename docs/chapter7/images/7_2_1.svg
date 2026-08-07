@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="1600" height="830" viewBox="0 0 1600 830"
+     style="background: #e6e5f5; font-family: 'Comic Sans MS','YouYuan','幼圆',cursive,sans-serif;">
+
+  <defs>
+    <filter id="sh" x="-3%" y="-3%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+    <marker id="ma-gray" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 8,3 0,6" fill="#58595B"/>
+    </marker>
+    <marker id="ma-orange" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 8,3 0,6" fill="#EF7816"/>
+    </marker>
+    <marker id="ma-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 8,3 0,6" fill="#4caf50"/>
+    </marker>
+    <marker id="ma-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 8,3 0,6" fill="#90caf9"/>
+    </marker>
+    <marker id="ma-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0,0 8,3 0,6" fill="#D10028"/>
+    </marker>
+    <marker id="ma-up-orange" markerWidth="8" markerHeight="6" refX="4" refY="5" orient="auto">
+      <polygon points="8,0 8,6 0,3" fill="#EF7816"/>
+    </marker>
+    <style>
+      @keyframes flow { to { stroke-dashoffset: 0; } }
+      .dash-gray { stroke-dasharray: 7 5; }
+      .dash-orange { stroke-dasharray: 9 6; animation: flow 1.5s linear infinite; stroke-dashoffset: 0; }
+    </style>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- Background border                                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <rect x="4" y="4" width="1592" height="822" rx="60" fill="#e6e5f5" stroke="#2f3f7f" stroke-width="3" filter="url(#sh)"/>
+
+  <!-- Title -->
+  <text x="800" y="50" text-anchor="middle" font-size="38" font-weight="bold" fill="#344A7F">Agentic RAG</text>
+
+  <!-- Phase labels (y=78) -->
+  <text x="330" y="78" text-anchor="middle" font-size="14" fill="#3f51b5" font-weight="bold">🔵 Agent 检索决策阶段</text>
+  <text x="1280" y="78" text-anchor="middle" font-size="14" fill="#f57c00" font-weight="bold">🟠 质量评估与生成阶段</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ROW 1  (y=100→170):  User Query  →  Agent modules                        -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- User Query -->
+  <rect x="70" y="100" width="170" height="66" rx="10" fill="#fff" stroke="#58595B" stroke-width="1.8" filter="url(#sh)"/>
+  <text x="155" y="126" text-anchor="middle" font-size="20" font-weight="bold" fill="#414042">用户查询</text>
+  <text x="155" y="150" text-anchor="middle" font-size="11" fill="#58595B">复杂 / 多跳 / 开放域问题</text>
+
+  <!-- Arrow: User Query → Agent -->
+  <line x1="240" y1="133" x2="276" y2="133" stroke="#58595B" stroke-width="1.6" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- Agent Core label -->
+  <text x="535" y="87" text-anchor="middle" font-size="13" fill="#1565c0" font-weight="bold">Agent 决策核心 (LLM)  ══════════════════════════</text>
+
+  <!-- Module 1: 查询规划 -->
+  <rect x="280" y="100" width="158" height="70" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.8" filter="url(#sh)"/>
+  <text x="359" y="125" text-anchor="middle" font-size="17" font-weight="bold" fill="#1565c0">📋 查询规划</text>
+  <text x="359" y="152" text-anchor="middle" font-size="12" fill="#58595B">分解 · 排序 · 策略</text>
+
+  <!-- Module 2: 检索决策 -->
+  <rect x="458" y="100" width="158" height="70" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.8" filter="url(#sh)"/>
+  <text x="537" y="125" text-anchor="middle" font-size="17" font-weight="bold" fill="#1565c0">⚙️ 检索决策</text>
+  <text x="537" y="152" text-anchor="middle" font-size="12" fill="#58595B">工具选择 · 时机判断</text>
+
+  <!-- Module 3: 迭代反思 -->
+  <rect x="636" y="100" width="158" height="70" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.8" filter="url(#sh)"/>
+  <text x="715" y="125" text-anchor="middle" font-size="17" font-weight="bold" fill="#1565c0">🔄 迭代反思</text>
+  <text x="715" y="152" text-anchor="middle" font-size="12" fill="#58595B">质量评估 · 改写重试</text>
+
+  <!-- Sub-arrows between agent modules -->
+  <line x1="438" y1="135" x2="456" y2="135" stroke="#90caf9" stroke-width="1.4" marker-end="url(#ma-blue)"/>
+  <line x1="616" y1="135" x2="634" y2="135" stroke="#90caf9" stroke-width="1.4" marker-end="url(#ma-blue)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ROW 2  (y=228→278):  Tool Selection bar                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <line x1="537" y1="170" x2="537" y2="223" stroke="#58595B" stroke-width="1.6" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <rect x="280" y="228" width="514" height="50" rx="10" fill="#e1bee7" stroke="#9c27b0" stroke-width="1.8" filter="url(#sh)"/>
+  <text x="537" y="259" text-anchor="middle" font-size="18" font-weight="bold" fill="#6a1b9a">工具选择与调用 (Tool Selection)</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ROW 3  (y=330→388):  Three Tools (left)  +  Retrieved Context (right)     -->
+  <!--                                                                           -->
+  <!--  Column layout (left): c1(x=185)  c2(x=415)  c3(x=645)                -->
+  <!--  Each tool: w=190, gap=40 between columns                                 -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Arrows: Tool Selection → Tools -->
+  <line x1="185" y1="278" x2="185" y2="326" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="415" y1="278" x2="415" y2="326" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="645" y1="278" x2="645" y2="326" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- vector_search  (c1: x=90→280) -->
+  <rect x="90" y="330" width="190" height="58" rx="10" fill="#fff" stroke="#3559E0" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="185" y="355" text-anchor="middle" font-size="16" font-weight="bold" fill="#414042">🔍 vector_search</text>
+  <text x="185" y="378" text-anchor="middle" font-size="12" fill="#58595B">向量数据库语义检索</text>
+
+  <!-- web_search  (c2: x=320→510) -->
+  <rect x="320" y="330" width="190" height="58" rx="10" fill="#fff" stroke="#EF7816" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="415" y="355" text-anchor="middle" font-size="16" font-weight="bold" fill="#414042">🌐 web_search</text>
+  <text x="415" y="378" text-anchor="middle" font-size="12" fill="#58595B">互联网实时搜索</text>
+
+  <!-- kg_query  (c3: x=550→740) -->
+  <rect x="550" y="330" width="190" height="58" rx="10" fill="#fff" stroke="#6C2BC1" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="645" y="355" text-anchor="middle" font-size="16" font-weight="bold" fill="#414042">🔗 kg_query</text>
+  <text x="645" y="378" text-anchor="middle" font-size="12" fill="#58595B">知识图谱结构化查询</text>
+
+  <!-- Arrows: Tools → Context (flowing right through the column gap) -->
+  <line x1="280" y1="359" x2="976" y2="359" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="510" y1="359" x2="976" y2="359" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="740" y1="359" x2="976" y2="359" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- Retrieved Context (right column, same row) -->
+  <rect x="980" y="320" width="270" height="72" rx="10" fill="#fff" stroke="#58595B" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="1115" y="346" text-anchor="middle" font-size="18" font-weight="bold" fill="#414042">检索到的上下文</text>
+  <text x="1115" y="370" text-anchor="middle" font-size="12" fill="#58595B">合并去重 · 来源标注 · 相关性分数</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ROW 4  (y=438→480):  Data Sources (left)  +  Critique (right)             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Arrows: Tools → Data Sources -->
+  <line x1="185" y1="388" x2="185" y2="434" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="415" y1="388" x2="415" y2="434" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+  <line x1="645" y1="388" x2="645" y2="434" stroke="#58595B" stroke-width="1.3" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- 向量数据库  (c1) -->
+  <rect x="90" y="438" width="190" height="42" rx="8" fill="#e8eaf6" stroke="#3f51b5" stroke-width="1.3" filter="url(#sh)"/>
+  <text x="185" y="464" text-anchor="middle" font-size="15" fill="#414042">📚 向量数据库</text>
+
+  <!-- Web 搜索引擎  (c2) -->
+  <rect x="320" y="438" width="190" height="42" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="1.3" filter="url(#sh)"/>
+  <text x="415" y="464" text-anchor="middle" font-size="15" fill="#414042">🌐 Web 搜索引擎</text>
+
+  <!-- 知识图谱  (c3) -->
+  <rect x="550" y="438" width="190" height="42" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1.3" filter="url(#sh)"/>
+  <text x="645" y="464" text-anchor="middle" font-size="15" fill="#414042">🔗 知识图谱 (Graph)</text>
+
+  <!-- Arrow: Context → Critique (right column) -->
+  <line x1="1115" y1="392" x2="1115" y2="428" stroke="#58595B" stroke-width="1.6" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- Critique -->
+  <rect x="980" y="434" width="270" height="82" rx="10" fill="#fff3e0" stroke="#f57c00" stroke-width="2" filter="url(#sh)"/>
+  <text x="1115" y="459" text-anchor="middle" font-size="18" font-weight="bold" fill="#414042">质量评估 (Critique)</text>
+  <text x="1115" y="484" text-anchor="middle" font-size="13" fill="#58595B">相关性评分 · 充分性判断</text>
+  <text x="1115" y="504" text-anchor="middle" font-size="12" fill="#58595B">缺失维度识别 · 失败原因诊断</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ROW 5  (y=560→690):  Refine (left)  +  Decision / Generate (right)        -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Arrow: Critique → Decision diamond -->
+  <line x1="1115" y1="516" x2="1115" y2="556" stroke="#58595B" stroke-width="1.6" class="dash-gray" marker-end="url(#ma-gray)"/>
+
+  <!-- Decision Diamond -->
+  <polygon points="1115,560 1180,593 1115,626 1050,593" fill="#fff" stroke="#414042" stroke-width="1.6" filter="url(#sh)"/>
+  <text x="1115" y="588" text-anchor="middle" font-size="15" font-weight="bold" fill="#414042">信息</text>
+  <text x="1115" y="606" text-anchor="middle" font-size="15" font-weight="bold" fill="#414042">充分?</text>
+
+  <!-- ─── Branch YES: 足够 → 生成答案 → 输出答案 (right) ─── -->
+  <line x1="1180" y1="593" x2="1242" y2="593" stroke="#4caf50" stroke-width="2" marker-end="url(#ma-green)"/>
+  <text x="1210" y="585" text-anchor="middle" font-size="14" font-weight="bold" fill="#4caf50">✅ 足够</text>
+
+  <!-- 生成最终答案 -->
+  <rect x="1246" y="561" width="210" height="64" rx="10" fill="#c8e6c9" stroke="#4caf50" stroke-width="2" filter="url(#sh)"/>
+  <text x="1351" y="586" text-anchor="middle" font-size="18" font-weight="bold" fill="#2e7d32">生成最终答案</text>
+  <text x="1351" y="612" text-anchor="middle" font-size="12" fill="#58595B">整合多轮检索结果 · 引用来源</text>
+
+  <!-- Arrow: 生成答案 → 输出答案 -->
+  <line x1="1351" y1="625" x2="1351" y2="662" stroke="#4caf50" stroke-width="1.8" class="dash-gray" marker-end="url(#ma-green)"/>
+
+  <!-- 输出答案 -->
+  <rect x="1301" y="666" width="100" height="40" rx="14" fill="#fff" stroke="#4caf50" stroke-width="2" filter="url(#sh)"/>
+  <text x="1351" y="691" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">📤 输出答案</text>
+
+  <!-- ─── Branch NO: 不足 → 改写查询 (left, then feedback loop up) ─── -->
+  <line x1="1050" y1="593" x2="605" y2="593" stroke="#D10028" stroke-width="1.8" class="dash-gray" marker-end="url(#ma-red)"/>
+  <text x="830" y="585" text-anchor="middle" font-size="14" font-weight="bold" fill="#D10028">❌ 不足</text>
+
+  <!-- 改写查询 (Refine) -->
+  <rect x="280" y="565" width="320" height="58" rx="10" fill="#ffcdd2" stroke="#D10028" stroke-width="2" filter="url(#sh)"/>
+  <text x="440" y="589" text-anchor="middle" font-size="18" font-weight="bold" fill="#b71c1c">改写查询 (Refine)</text>
+  <text x="440" y="613" text-anchor="middle" font-size="12" fill="#58595B">分析失败原因 → 针对性调整查询策略</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- ★  FEEDBACK LOOP:  Refine  →  UP along x=262  →  back to Agent          -->
+  <!--    The vertical line at x=262 runs cleanly in the gap between            -->
+  <!--    User Query (ends x=240) and Agent modules (start x=280).              -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Arrow from Refine left edge → feedback line -->
+  <line x1="280" y1="594" x2="265" y2="594" stroke="#EF7816" stroke-width="1.8" class="dash-orange" marker-end="url(#ma-orange)"/>
+
+  <!-- Feedback vertical line -->
+  <line x1="262" y1="594" x2="262" y2="135" stroke="#EF7816" stroke-width="2.8" class="dash-orange" marker-end="url(#ma-up-orange)"/>
+
+  <!-- Feedback label: placed in the gap between Tool Selection (ends y=278) and Tools (starts y=330) -->
+  <rect x="55" y="285" width="185" height="43" rx="8" fill="#fff3e0" stroke="#EF7816" stroke-width="1.5" filter="url(#sh)"/>
+  <text x="147" y="305" text-anchor="middle" font-size="13" font-weight="bold" fill="#EF7816">🔄 诊断式反馈循环</text>
+  <text x="147" y="322" text-anchor="middle" font-size="10" fill="#58595B">基于失败原因 · 针对性改写</text>
+
+  <!-- Connector: feedback label → feedback line -->
+  <line x1="240" y1="306" x2="259" y2="306" stroke="#EF7816" stroke-width="1.2" class="dash-orange" marker-end="url(#ma-orange)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- LEGEND                                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <rect x="60" y="738" width="1480" height="40" rx="8" fill="#f8f8f8" stroke="#D1D3D4" stroke-width="1"/>
+  <text x="800" y="763" text-anchor="middle" font-size="12" fill="#58595B">
+    主数据流 (灰色虚线)  |  Agent 反馈循环 (橙色虚线)  |  Agent 决策 (蓝色)  |  工具层 (紫色)  |  知识源 (浅蓝 / 橙 / 紫)  |  质量评估 (橙色)  |  生成输出 (绿色)
+  </text>
+
+  <!-- Bottom comparison -->
+  <text x="800" y="795" text-anchor="middle" font-size="14" fill="#58595B">
+    ⬆ 与传统 RAG 的核心差异：Agent 自主决策「是否检索 → 用什么工具 → 检索质量如何 → 是否需要改写重试」→ 而非固定 pipeline 的一次性检索
+  </text>
+</svg>
