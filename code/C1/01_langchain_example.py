@@ -18,8 +18,15 @@ loader = UnstructuredMarkdownLoader(markdown_path)
 docs = loader.load()
 
 # 文本分块
-text_splitter = RecursiveCharacterTextSplitter()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1500,
+    chunk_overlap=300,)
 chunks = text_splitter.split_documents(docs)
+
+for i,chunk in enumerate(chunks):
+    print(f"=====第{i}块=====")
+    print(chunk.page_content)
+    print(f"字符长度：{len(chunk.page_content)}")
+    print("\n")
 
 # 中文嵌入模型
 embeddings = HuggingFaceEmbeddings(
@@ -48,28 +55,35 @@ prompt = ChatPromptTemplate.from_template("""请根据下面提供的上下文�
 # 配置大语言模型
 
 # 使用 AIHubmix
-llm = ChatOpenAI(
-    model="glm-4.7-flash-free",
-    temperature=0.7,
-    max_tokens=4096,
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
-    base_url="https://aihubmix.com/v1"
-)
-
 # llm = ChatOpenAI(
-#     model="deepseek-chat",
+#     model="glm-4.7-flash-free",
 #     temperature=0.7,
 #     max_tokens=4096,
 #     api_key=os.getenv("DEEPSEEK_API_KEY"),
-#     base_url="https://api.deepseek.com"
+#     base_url="https://aihubmix.com/v1"
 # )
+
+llm = ChatOpenAI(
+    model="deepseek-chat",
+    temperature=0.7,
+    max_tokens=4096,
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com"
+)
 
 # 用户查询
 question = "文中举了哪些例子？"
 
 # 在向量存储中查询相关文档
 retrieved_docs = vectorstore.similarity_search(question, k=3)
+# # ============ 新增调试代码 ============
+# print("======= 检索召回的文档内容 =======")
+# for idx,doc in enumerate(retrieved_docs):
+#     print(f"--- 第{idx+1}块内容---")
+#     print(doc.page_content)
+# print("======= 结束召回内容 =======")
+# # ==================================
 docs_content = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
 answer = llm.invoke(prompt.format(question=question, context=docs_content))
-print(answer)
+print(answer.content)
