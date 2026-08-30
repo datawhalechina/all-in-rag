@@ -17,6 +17,7 @@
 - `Neo4J 简单应用`（本目录下的第一个示例专题）
 - `PowerRAG SDK 文本检索 Demo`（上传 Markdown → 解析/切分/向量化 → Top‑K 检索）
 - `多模态 Omni Embedding 实践`（以 Jina v5-omni 为主的跨模态向量实践）
+- `持久化纠错记忆`（SQLite 生命周期、来源边界与确定性跨会话评估）
 
 我们希望通过 Extra Chapter：
 
@@ -147,4 +148,3 @@ Extra-chapter: <你的专题标题>
 ---
 
 欢迎你把自己的实践经验沉淀在这里，让更多学习 RAG / LLM 应用的同学受益。 🎉
-

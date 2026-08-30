@@ -1,0 +1,5 @@
+{"id":"correction-seat","type":"correction","key":"seat","old":"请预订靠窗座位","new":"请预订靠过道座位","query":"请帮我预订座位","expected":"请预订靠过道座位"}
+{"id":"correction-drink","type":"correction","key":"drink","old":"咖啡默认加糖","new":"纠正：咖啡不要加糖","query":"准备一杯咖啡","expected":"纠正：咖啡不要加糖"}
+{"id":"stale-language","type":"stale_conflict","key":"language","old":"回答使用英文","new":"纠正：回答使用中文","query":"回答时使用什么语言","expected":"纠正：回答使用中文"}
+{"id":"irrelevant-food","type":"irrelevant","key":"food","old":"晚餐不吃香菜","query":"预订明天的航班座位","expected":null}
+{"id":"deleted-address","type":"deletion","key":"address","old":"收货地址是旧城区 8 号","query":"我的收货地址是什么","expected":null}
