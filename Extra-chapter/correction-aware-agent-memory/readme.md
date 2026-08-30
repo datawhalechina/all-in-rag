@@ -11,7 +11,7 @@ RAG 的外部知识库回答“哪些资料能支持当前问题”；Agent Memo
 3. 用户、命名空间与来源三重边界；
 4. 关闭并重新打开 SQLite 后，行为评估仍可复现。
 
-实现只使用 Python 3.12 标准库。它不是聊天机器人，也不调用 LLM；这样能把“记忆策略是否正确”与“模型生成是否随机”分开。
+实现只使用 Python 标准库，支持 Python 3.10 及以上版本。它不是聊天机器人，也不调用 LLM；这样能把“记忆策略是否正确”与“模型生成是否随机”分开。
 
 ## 二、知识检索与记忆读写不是一条路径
 
@@ -86,7 +86,7 @@ correction-aware-agent-memory/
 
 要求：
 
-- Python 3.12；
+- Python 3.10 或更高版本（本专题在 Python 3.10.20 上实测；仓库推荐环境为 Python 3.12.7）；
 - 无网络、API Key、模型和第三方包；
 - SQLite 由 Python 标准库 `sqlite3` 提供。
 
@@ -94,16 +94,16 @@ correction-aware-agent-memory/
 
 ```bash
 cd Extra-chapter/correction-aware-agent-memory
-python3.12 -m unittest discover -s tests -v
-python3.12 code/demo_two_sessions.py
-python3.12 code/evaluate.py
-python3.12 -m py_compile code/*.py tests/*.py
+python3 -m unittest discover -s tests -v
+python3 code/demo_two_sessions.py
+python3 code/evaluate.py
+python3 -m py_compile code/*.py tests/*.py
 ```
 
 如需保留演示数据库：
 
 ```bash
-python3.12 code/demo_two_sessions.py --db data/demo_memory.sqlite3
+python3 code/demo_two_sessions.py --db data/demo_memory.sqlite3
 ```
 
 不传 `--db` 时使用临时目录，运行后自动清理。
