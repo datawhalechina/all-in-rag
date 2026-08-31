@@ -8,7 +8,7 @@ from pathlib import Path
 CHAPTER = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(CHAPTER / "code"))
 
-from evaluate import evaluate  # noqa: E402
+from evaluate import evaluate, metrics  # noqa: E402
 from memory_store import MemoryStore  # noqa: E402
 
 
@@ -273,6 +273,54 @@ class EvaluationTest(unittest.TestCase):
         self.assertEqual(report["Irrelevant-Memory Intrusion"], 0.0)
         self.assertEqual(report["Deletion Compliance"], 1.0)
         self.assertEqual(report["Recall@1"], 1.0)
+
+    def test_repeat_mistake_rate_only_counts_old_answer(self) -> None:
+        cases = [
+            {
+                "id": "correction",
+                "type": "correction",
+                "old": "旧错误",
+                "expected": "新纠正",
+            },
+            {
+                "id": "stale",
+                "type": "stale_conflict",
+                "expected": "最新值",
+            },
+            {"id": "irrelevant", "type": "irrelevant"},
+            {"id": "deletion", "type": "deletion"},
+        ]
+        results = [
+            {
+                "id": "correction",
+                "selected": None,
+                "token_overhead": 0,
+                "latency_us": 0,
+            },
+            {
+                "id": "stale",
+                "selected": "最新值",
+                "token_overhead": 0,
+                "latency_us": 0,
+            },
+            {
+                "id": "irrelevant",
+                "selected": None,
+                "token_overhead": 0,
+                "latency_us": 0,
+            },
+            {
+                "id": "deletion",
+                "selected": None,
+                "token_overhead": 0,
+                "latency_us": 0,
+            },
+        ]
+
+        report = metrics(cases, results)
+
+        self.assertEqual(report["Correction Adherence"], 0.0)
+        self.assertEqual(report["Repeat-Mistake Rate"], 0.0)
 
 
 if __name__ == "__main__":

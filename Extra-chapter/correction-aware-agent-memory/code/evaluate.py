@@ -91,7 +91,9 @@ def metrics(cases: list[dict], results: list[dict]) -> dict[str, float]:
     adherence = rate(corrections, lambda case, row: row["selected"] == case["expected"])
     return {
         "Correction Adherence": adherence,
-        "Repeat-Mistake Rate": 1.0 - adherence,
+        "Repeat-Mistake Rate": rate(
+            corrections, lambda case, row: row["selected"] == case["old"]
+        ),
         "Stale-Conflict Resolution": rate(stale, lambda case, row: row["selected"] == case["expected"]),
         "Irrelevant-Memory Intrusion": rate(irrelevant, lambda _, row: row["selected"] is not None),
         "Deletion Compliance": rate(deleted, lambda _, row: row["selected"] is None),
