@@ -288,7 +288,12 @@ class MemoryStore:
                 for row in rows
                 if lexical_score(query, f"{row['memory_key']} {row['value']}") > 0
             ]
-        rows.sort(key=lambda row: self.policy.rank(row, query), reverse=True)
+        rows.sort(
+            key=lambda row: self.policy.rank(
+                row, query, correction_first=memory_key is not None
+            ),
+            reverse=True,
+        )
         return rows[:limit]
 
     def delete(self, *, memory_id: int, owner_id: str, namespace: str) -> bool:

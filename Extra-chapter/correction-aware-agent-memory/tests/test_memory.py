@@ -305,6 +305,33 @@ class MemoryStoreTest(unittest.TestCase):
                 1,
             )
 
+    def test_cross_key_relevance_precedes_correction_priority(self) -> None:
+        with MemoryStore(self.database, clock=lambda: 10) as store:
+            relevant_id = self.write(
+                store,
+                memory_key="hotel_budget",
+                value="预算每晚500元，靠近地铁",
+                source_ref="session/hotel",
+            )
+            unrelated_correction_id = self.write(
+                store,
+                memory_key="flight_seat",
+                value="航班座位改为靠过道",
+                kind="correction",
+                source_ref="session/flight-correction",
+            )
+            rows = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="酒店预算靠近地铁",
+                limit=2,
+            )
+
+        self.assertEqual(
+            [row["id"] for row in rows],
+            [relevant_id, unrelated_correction_id],
+        )
+
     def test_expiry_and_delete_compliance(self) -> None:
         with MemoryStore(self.database, clock=lambda: 10) as store:
             memory_id = self.write(store, expires_at=15)

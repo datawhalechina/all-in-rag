@@ -42,10 +42,13 @@ class MemoryPolicy:
         if source_type == "external" and kind in _DURABLE_USER_KINDS:
             raise PermissionError("外部资料不能写入用户偏好、规则或纠正记录")
 
-    def rank(self, memory: dict, query: str) -> tuple[float, float, int, int]:
-        """优先级依次为纠正、相关性、新鲜度、稳定 ID。"""
+    def rank(
+        self, memory: dict, query: str, *, correction_first: bool
+    ) -> tuple[float, float, int, int]:
+        """指定 key 时纠正优先；跨 key 召回时相关性优先。"""
         relevance = lexical_score(
             query, f"{memory['memory_key']} {memory['value']}"
         )
         priority = self.correction_bonus if memory["kind"] == "correction" else 0
-        return priority, relevance, memory["updated_at"], memory["id"]
+        leading = (priority, relevance) if correction_first else (relevance, priority)
+        return *leading, memory["updated_at"], memory["id"]
