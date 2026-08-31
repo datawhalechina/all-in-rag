@@ -21,9 +21,14 @@ def load_cases(path: Path = DATASET) -> list[dict]:
         return [json.loads(line) for line in stream if line.strip()]
 
 
-def baseline(case: dict, mode: str) -> tuple[str | None, int, float]:
+def baseline(case: dict, mode: str) -> tuple[str | None, int, float, int]:
     if mode == "no_memory":
-        return (case.get("old") if case["type"] not in {"irrelevant", "deletion"} else None, 0, 0.0)
+        selected = (
+            case.get("old")
+            if case["type"] not in {"irrelevant", "deletion"}
+            else None
+        )
+        return selected, 0, 0.0, 0
     candidates = [case["old"]]
     if case.get("new"):
         candidates.append(case["new"])
@@ -31,10 +36,12 @@ def baseline(case: dict, mode: str) -> tuple[str | None, int, float]:
         candidates,
         key=lambda value: lexical_score(case["query"], f"{case['key']} {value}"),
     )
-    return selected, math.ceil(len(selected) / 4), 0.0
+    return selected, math.ceil(len(selected) / 4), 0.0, len(candidates)
 
 
-def correction_aware(case: dict, directory: Path) -> tuple[str | None, int, float]:
+def correction_aware(
+    case: dict, directory: Path
+) -> tuple[str | None, int, float, int]:
     database = directory / f"{case['id']}.sqlite3"
     with MemoryStore(database, clock=lambda: 100) as store:
         memory_id = store.write(
@@ -56,6 +63,25 @@ def correction_aware(case: dict, directory: Path) -> tuple[str | None, int, floa
                 source_type="user",
                 source_ref=f"{case['id']}/correction",
             )
+        if case["type"] == "stale_conflict":
+            store.write(
+                owner_id="eval-user",
+                namespace="assistant",
+                memory_key=case["key"],
+                value=case["old"],
+                kind="preference",
+                source_type="user",
+                source_ref=f"{case['id']}/late-stale-value",
+            )
+            memory_id = store.write(
+                owner_id="eval-user",
+                namespace="assistant",
+                memory_key=case["key"],
+                value=case["new"],
+                kind="correction",
+                source_type="user",
+                source_ref=f"{case['id']}/repeated-correction",
+            )
         if case["type"] == "deletion":
             store.delete(
                 memory_id=memory_id,
@@ -71,10 +97,19 @@ def correction_aware(case: dict, directory: Path) -> tuple[str | None, int, floa
             query=case["query"],
             limit=1,
         )
+        active_conflicts = reopened.connection.execute(
+            """
+            SELECT COUNT(*) AS count FROM memories
+            WHERE owner_id=? AND namespace=? AND memory_key=?
+              AND status='active'
+              AND (expires_at IS NULL OR expires_at > ?)
+            """,
+            ("eval-user", "assistant", case["key"], 200),
+        ).fetchone()["count"]
     elapsed_us = (time.perf_counter_ns() - started) / 1_000
     selected = recalled[0]["value"] if recalled else None
     overhead = math.ceil(len(selected) / 4) if selected else 0
-    return selected, overhead, elapsed_us
+    return selected, overhead, elapsed_us, int(active_conflicts)
 
 
 def metrics(cases: list[dict], results: list[dict]) -> dict[str, float]:
@@ -94,7 +129,13 @@ def metrics(cases: list[dict], results: list[dict]) -> dict[str, float]:
         "Repeat-Mistake Rate": rate(
             corrections, lambda case, row: row["selected"] == case["old"]
         ),
-        "Stale-Conflict Resolution": rate(stale, lambda case, row: row["selected"] == case["expected"]),
+        "Stale-Conflict Resolution": rate(
+            stale,
+            lambda case, row: (
+                row["selected"] == case["expected"]
+                and row["active_conflicts"] == 1
+            ),
+        ),
         "Irrelevant-Memory Intrusion": rate(irrelevant, lambda _, row: row["selected"] is not None),
         "Deletion Compliance": rate(deleted, lambda _, row: row["selected"] is None),
         "Recall@1": rate(relevant, lambda case, row: row["selected"] == case["expected"]),
@@ -111,7 +152,7 @@ def evaluate() -> dict[str, dict[str, float]]:
         for mode in ("no_memory", "similarity", "correction_aware"):
             rows = []
             for case in cases:
-                selected, overhead, latency = (
+                selected, overhead, latency, active_conflicts = (
                     correction_aware(case, directory)
                     if mode == "correction_aware"
                     else baseline(case, mode)
@@ -122,6 +163,7 @@ def evaluate() -> dict[str, dict[str, float]]:
                         "selected": selected,
                         "token_overhead": overhead,
                         "latency_us": latency,
+                        "active_conflicts": active_conflicts,
                     }
                 )
             report[mode] = metrics(cases, rows)

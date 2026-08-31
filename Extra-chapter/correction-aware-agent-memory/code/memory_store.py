@@ -90,6 +90,8 @@ class MemoryStore:
             kind=kind, source_type=source_type, source_ref=source_ref
         )
         now = self.clock()
+        if expires_at is not None and expires_at <= now:
+            raise ValueError("expires_at 必须晚于写入时间")
         with self.connection:
             duplicate = self.connection.execute(
                 """

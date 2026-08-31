@@ -182,6 +182,36 @@ class MemoryStoreTest(unittest.TestCase):
             replacement_id = self.write(reopened, expires_at=30)
         self.assertNotEqual(expired_id, replacement_id)
 
+    def test_already_expired_correction_cannot_supersede_active_memory(self) -> None:
+        with MemoryStore(self.database, clock=lambda: 10) as store:
+            old_id = self.write(store)
+            with self.assertRaises(ValueError):
+                self.write(
+                    store,
+                    value="靠过道",
+                    kind="correction",
+                    source_ref="session/expired-correction",
+                    expires_at=10,
+                )
+            old = store.connection.execute(
+                "SELECT status FROM memories WHERE id=?", (old_id,)
+            ).fetchone()
+            supersede_events = store.connection.execute(
+                "SELECT COUNT(*) AS count FROM memory_events "
+                "WHERE memory_id=? AND action='supersede'",
+                (old_id,),
+            ).fetchone()["count"]
+            rows = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="座位",
+                memory_key="seat",
+            )
+
+        self.assertEqual(old["status"], "active")
+        self.assertEqual(supersede_events, 0)
+        self.assertEqual([row["id"] for row in rows], [old_id])
+
     def test_update_rejects_empty_value(self) -> None:
         with MemoryStore(self.database, clock=lambda: 10) as store:
             memory_id = self.write(store)
@@ -351,24 +381,28 @@ class EvaluationTest(unittest.TestCase):
                 "selected": None,
                 "token_overhead": 0,
                 "latency_us": 0,
+                "active_conflicts": 0,
             },
             {
                 "id": "stale",
                 "selected": "最新值",
                 "token_overhead": 0,
                 "latency_us": 0,
+                "active_conflicts": 1,
             },
             {
                 "id": "irrelevant",
                 "selected": None,
                 "token_overhead": 0,
                 "latency_us": 0,
+                "active_conflicts": 0,
             },
             {
                 "id": "deletion",
                 "selected": None,
                 "token_overhead": 0,
                 "latency_us": 0,
+                "active_conflicts": 0,
             },
         ]
 
@@ -376,6 +410,53 @@ class EvaluationTest(unittest.TestCase):
 
         self.assertEqual(report["Correction Adherence"], 0.0)
         self.assertEqual(report["Repeat-Mistake Rate"], 0.0)
+
+    def test_stale_conflict_requires_single_active_record(self) -> None:
+        cases = [
+            {
+                "id": "correction",
+                "type": "correction",
+                "old": "旧错误",
+                "expected": "新纠正",
+            },
+            {"id": "stale", "type": "stale_conflict", "expected": "最新值"},
+            {"id": "irrelevant", "type": "irrelevant"},
+            {"id": "deletion", "type": "deletion"},
+        ]
+        results = [
+            {
+                "id": "correction",
+                "selected": "新纠正",
+                "token_overhead": 0,
+                "latency_us": 0,
+                "active_conflicts": 1,
+            },
+            {
+                "id": "stale",
+                "selected": "最新值",
+                "token_overhead": 0,
+                "latency_us": 0,
+                "active_conflicts": 2,
+            },
+            {
+                "id": "irrelevant",
+                "selected": None,
+                "token_overhead": 0,
+                "latency_us": 0,
+                "active_conflicts": 0,
+            },
+            {
+                "id": "deletion",
+                "selected": None,
+                "token_overhead": 0,
+                "latency_us": 0,
+                "active_conflicts": 0,
+            },
+        ]
+
+        report = metrics(cases, results)
+
+        self.assertEqual(report["Stale-Conflict Resolution"], 0.0)
 
 
 if __name__ == "__main__":

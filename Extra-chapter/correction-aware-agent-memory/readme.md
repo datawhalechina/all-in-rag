@@ -58,7 +58,7 @@ correction-aware-agent-memory/
 
 ### 4.1 写入与更新
 
-每条记录包含 `owner_id`、`namespace`、`memory_key`、值、类型、来源、时间、有效期和状态。来源引用 `source_ref` 必填，使每次写入都能回到会话消息或文档。
+每条记录包含 `owner_id`、`namespace`、`memory_key`、值、类型、来源、时间、有效期和状态。来源引用 `source_ref` 必填，使每次写入都能回到会话消息或文档。显式传入的 `expires_at` 必须晚于当前写入时间；校验在事务和冲突替代之前完成，避免一条写入即到期的纠正先隐藏有效旧记录、自身又无法召回。
 
 同一用户、命名空间和 key 下写入 `correction` 时，全部未过期的活动冲突都会变为 `superseded`，纠正记录通过 `supersedes_id` 指向其中最新的旧版本。即使重复写入已有纠正，也会先清理此后出现的新冲突，再返回原 ID 并留下来源审计事件。`update` 同样新增版本而非原地覆盖；更新的旧版本如果是纠正，新版本也会替代同 key 下后来出现的全部未过期活动冲突。调用方必须提供匹配的 `owner_id + namespace`，且不能更新已经过期的版本。
 
@@ -141,7 +141,7 @@ with MemoryStore("memory.sqlite3") as store:
 
 ## 七、跨会话评估
 
-`evaluate.py` 对固定 JSONL 逐条创建数据库：会话一写入旧偏好和纠正，关闭连接；会话二重新打开文件并召回。它比较三种策略：
+`evaluate.py` 对固定 JSONL 逐条创建数据库：会话一写入旧偏好和纠正，关闭连接；会话二重新打开文件并召回。`stale_conflict` 样例还会在纠正后写入一个迟到的旧偏好，再重复写入该纠正，验证迟到冲突被清理且最终只有一条活动记录。它比较三种策略：
 
 - `no_memory`：没有持久记忆，沿用旧默认；
 - `similarity`：只按词法相似度选候选，不理解纠正、删除或相关性阈值；
@@ -153,7 +153,7 @@ with MemoryStore("memory.sqlite3") as store:
 |---|---|---|
 | Correction Adherence | 正确采用纠正的样例数 / 纠正样例数 | 越高越好 |
 | Repeat-Mistake Rate | 再次采用旧错误的样例数 / 纠正样例数 | 越低越好 |
-| Stale-Conflict Resolution | 冲突中选中最新有效纠正的样例数 / 冲突样例数 | 越高越好 |
+| Stale-Conflict Resolution | 首条召回为期望纠正且同 key 仅剩一条活动记录的样例数 / 冲突样例数 | 越高越好 |
 | Irrelevant-Memory Intrusion | 无关问题仍注入记忆的样例数 / 无关样例数 | 越低越好 |
 | Deletion Compliance | 删除后不再召回的样例数 / 删除样例数 | 越高越好 |
 | Recall@1 | 相关样例中首条召回等于期望值的数量 / 相关样例数 | 越高越好 |
