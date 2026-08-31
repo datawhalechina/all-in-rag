@@ -60,7 +60,7 @@ correction-aware-agent-memory/
 
 每条记录包含 `owner_id`、`namespace`、`memory_key`、值、类型、来源、时间、有效期和状态。来源引用 `source_ref` 必填，使每次写入都能回到会话消息或文档。
 
-同一用户、命名空间和 key 下写入 `correction` 时，全部未过期的活动冲突都会变为 `superseded`，纠正记录通过 `supersedes_id` 指向其中最新的旧版本。即使重复写入已有纠正，也会先清理此后出现的新冲突，再返回原 ID 并留下来源审计事件。`update` 同样新增版本而非原地覆盖，但调用方必须提供匹配的 `owner_id + namespace`，且不能更新已经过期的版本。
+同一用户、命名空间和 key 下写入 `correction` 时，全部未过期的活动冲突都会变为 `superseded`，纠正记录通过 `supersedes_id` 指向其中最新的旧版本。即使重复写入已有纠正，也会先清理此后出现的新冲突，再返回原 ID 并留下来源审计事件。`update` 同样新增版本而非原地覆盖；更新的旧版本如果是纠正，新版本也会替代同 key 下后来出现的全部未过期活动冲突。调用方必须提供匹配的 `owner_id + namespace`，且不能更新已经过期的版本。
 
 ### 4.2 召回
 

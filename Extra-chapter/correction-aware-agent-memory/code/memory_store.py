@@ -198,6 +198,24 @@ class MemoryStore:
                 source_type=old["source_type"],
                 source_ref=source_ref,
             )
+            conflict_ids: list[int] = []
+            if old["kind"] == "correction":
+                conflicts = self.connection.execute(
+                    """
+                    SELECT id FROM memories
+                    WHERE owner_id=? AND namespace=? AND memory_key=?
+                      AND id!=? AND status='active'
+                      AND (expires_at IS NULL OR expires_at > ?)
+                    """,
+                    (owner_id, namespace, old["memory_key"], memory_id, now),
+                ).fetchall()
+                conflict_ids = [int(conflict["id"]) for conflict in conflicts]
+                for conflict_id in conflict_ids:
+                    self.connection.execute(
+                        "UPDATE memories SET status='superseded', updated_at=? "
+                        "WHERE id=? AND owner_id=? AND namespace=?",
+                        (now, conflict_id, owner_id, namespace),
+                    )
             self.connection.execute(
                 """
                 UPDATE memories SET status='superseded', updated_at=?
@@ -229,6 +247,10 @@ class MemoryStore:
             )
             new_id = int(cursor.lastrowid)
             self._event(memory_id, "supersede", now, f"被 {new_id} 替代")
+            for conflict_id in conflict_ids:
+                self._event(
+                    conflict_id, "supersede", now, f"被纠正记录 {new_id} 替代"
+                )
             self._event(new_id, "update", now, source_ref)
             return new_id
 

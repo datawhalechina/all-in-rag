@@ -120,6 +120,61 @@ class MemoryStoreTest(unittest.TestCase):
         self.assertEqual(conflict_status, "superseded")
         self.assertEqual([row["id"] for row in rows], [correction_id])
 
+    def test_updating_correction_supersedes_new_conflicts(self) -> None:
+        with MemoryStore(self.database, clock=lambda: 10) as store:
+            correction_id = self.write(
+                store,
+                value="靠过道",
+                kind="correction",
+                source_ref="session/correction",
+            )
+            conflict_id = self.write(
+                store,
+                value="靠前",
+                source_ref="session/new-conflict",
+            )
+            updated_id = store.update(
+                correction_id,
+                owner_id="alice",
+                namespace="assistant",
+                value="靠后排过道",
+                source_ref="session/update",
+            )
+            conflict = store.connection.execute(
+                "SELECT status FROM memories WHERE id=?", (conflict_id,)
+            ).fetchone()
+            conflict_event = store.connection.execute(
+                """
+                SELECT detail FROM memory_events
+                WHERE memory_id=? AND action='supersede'
+                ORDER BY id DESC LIMIT 1
+                """,
+                (conflict_id,),
+            ).fetchone()
+            rows = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="座位",
+                memory_key="seat",
+            )
+            deleted = store.delete(
+                memory_id=updated_id,
+                owner_id="alice",
+                namespace="assistant",
+            )
+            rows_after_delete = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="座位",
+                memory_key="seat",
+            )
+
+        self.assertEqual(conflict["status"], "superseded")
+        self.assertEqual(conflict_event["detail"], f"被纠正记录 {updated_id} 替代")
+        self.assertEqual([row["id"] for row in rows], [updated_id])
+        self.assertTrue(deleted)
+        self.assertEqual(rows_after_delete, [])
+
     def test_expired_duplicate_can_be_written_again(self) -> None:
         with MemoryStore(self.database, clock=lambda: 10) as store:
             expired_id = self.write(store, expires_at=15)
