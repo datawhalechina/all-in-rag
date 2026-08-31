@@ -57,7 +57,11 @@ def correction_aware(case: dict, directory: Path) -> tuple[str | None, int, floa
                 source_ref=f"{case['id']}/correction",
             )
         if case["type"] == "deletion":
-            store.delete(memory_id=memory_id, owner_id="eval-user")
+            store.delete(
+                memory_id=memory_id,
+                owner_id="eval-user",
+                namespace="assistant",
+            )
 
     started = time.perf_counter_ns()
     with MemoryStore(database, clock=lambda: 200) as reopened:

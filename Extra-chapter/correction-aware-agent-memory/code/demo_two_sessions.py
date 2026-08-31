@@ -58,7 +58,11 @@ def session_two(database: Path, correction_id: int) -> None:
         except PermissionError as error:
             print(f"来源边界：已拒绝外部文档写入规则（{error}）。")
 
-        store.delete(memory_id=correction_id, owner_id="user-001")
+        store.delete(
+            memory_id=correction_id,
+            owner_id="user-001",
+            namespace="assistant",
+        )
         after_delete = store.recall(
             owner_id="user-001",
             namespace="assistant",

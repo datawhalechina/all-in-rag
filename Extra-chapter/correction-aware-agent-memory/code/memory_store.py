@@ -100,7 +100,7 @@ class MemoryStore:
                 """,
                 (owner_id, namespace, memory_key, value, kind, now),
             ).fetchone()
-            if duplicate:
+            if duplicate and kind != "correction":
                 memory_id = int(duplicate["id"])
                 self._event(memory_id, "deduplicate", now, source_ref)
                 return memory_id
@@ -130,12 +130,18 @@ class MemoryStore:
                 ).fetchall()
                 for conflict in conflicts:
                     conflict_id = int(conflict["id"])
+                    if duplicate and conflict_id == int(duplicate["id"]):
+                        continue
                     self.connection.execute(
                         "UPDATE memories SET status='superseded', updated_at=? "
-                        "WHERE id=?",
-                        (now, conflict_id),
+                        "WHERE id=? AND owner_id=? AND namespace=?",
+                        (now, conflict_id, owner_id, namespace),
                     )
                     self._event(conflict_id, "supersede", now, "被纠正记录替代")
+                if duplicate:
+                    memory_id = int(duplicate["id"])
+                    self._event(memory_id, "deduplicate", now, source_ref)
+                    return memory_id
 
             cursor = self.connection.execute(
                 """
@@ -163,25 +169,41 @@ class MemoryStore:
             self._event(memory_id, "write", now, source_ref)
             return memory_id
 
-    def update(self, memory_id: int, *, value: str, source_ref: str) -> int:
+    def update(
+        self,
+        memory_id: int,
+        *,
+        owner_id: str,
+        namespace: str,
+        value: str,
+        source_ref: str,
+    ) -> int:
         """以新版本替代旧记录；旧版本保留用于审计。"""
         if not value.strip():
             raise ValueError("value 不能为空")
-        old = self.connection.execute(
-            "SELECT * FROM memories WHERE id=? AND status='active'", (memory_id,)
-        ).fetchone()
-        if old is None:
-            raise KeyError(f"不存在活动记忆: {memory_id}")
         now = self.clock()
-        self.policy.validate_write(
-            kind=old["kind"],
-            source_type=old["source_type"],
-            source_ref=source_ref,
-        )
         with self.connection:
+            old = self.connection.execute(
+                """
+                SELECT * FROM memories
+                WHERE id=? AND owner_id=? AND namespace=? AND status='active'
+                  AND (expires_at IS NULL OR expires_at > ?)
+                """,
+                (memory_id, owner_id, namespace, now),
+            ).fetchone()
+            if old is None:
+                raise KeyError(f"当前作用域不存在未过期的活动记忆: {memory_id}")
+            self.policy.validate_write(
+                kind=old["kind"],
+                source_type=old["source_type"],
+                source_ref=source_ref,
+            )
             self.connection.execute(
-                "UPDATE memories SET status='superseded', updated_at=? WHERE id=?",
-                (now, memory_id),
+                """
+                UPDATE memories SET status='superseded', updated_at=?
+                WHERE id=? AND owner_id=? AND namespace=? AND status='active'
+                """,
+                (now, memory_id, owner_id, namespace),
             )
             cursor = self.connection.execute(
                 """
@@ -245,17 +267,17 @@ class MemoryStore:
         rows.sort(key=lambda row: self.policy.rank(row, query), reverse=True)
         return rows[:limit]
 
-    def delete(self, *, memory_id: int, owner_id: str) -> bool:
-        """软删除并留下审计事件；owner 条件防止越权删除。"""
+    def delete(self, *, memory_id: int, owner_id: str, namespace: str) -> bool:
+        """软删除并留下审计事件；owner 与 namespace 防止越权删除。"""
         now = self.clock()
         with self.connection:
             cursor = self.connection.execute(
                 """
                 UPDATE memories
                 SET status='deleted', deleted_at=?, updated_at=?
-                WHERE id=? AND owner_id=? AND status='active'
+                WHERE id=? AND owner_id=? AND namespace=? AND status='active'
                 """,
-                (now, now, memory_id, owner_id),
+                (now, now, memory_id, owner_id, namespace),
             )
             if cursor.rowcount:
                 self._event(memory_id, "delete", now, "显式删除")

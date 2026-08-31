@@ -36,7 +36,13 @@ class MemoryStoreTest(unittest.TestCase):
     def test_write_update_and_cross_session_recall(self) -> None:
         with MemoryStore(self.database, clock=lambda: 10) as store:
             old_id = self.write(store)
-            new_id = store.update(old_id, value="靠过道", source_ref="session/2")
+            new_id = store.update(
+                old_id,
+                owner_id="alice",
+                namespace="assistant",
+                value="靠过道",
+                source_ref="session/2",
+            )
         with MemoryStore(self.database, clock=lambda: 20) as reopened:
             rows = reopened.recall(
                 owner_id="alice",
@@ -86,6 +92,34 @@ class MemoryStoreTest(unittest.TestCase):
         self.assertEqual(deduplicate_events, 1)
         self.assertEqual(rows[0]["kind"], "correction")
 
+    def test_repeated_correction_still_supersedes_new_conflict(self) -> None:
+        with MemoryStore(self.database, clock=lambda: 10) as store:
+            correction_id = self.write(
+                store,
+                value="靠过道",
+                kind="correction",
+                source_ref="session/correction",
+            )
+            conflict_id = self.write(store, value="靠前")
+            duplicate_id = self.write(
+                store,
+                value="靠过道",
+                kind="correction",
+                source_ref="session/repeated",
+            )
+            conflict_status = store.connection.execute(
+                "SELECT status FROM memories WHERE id=?", (conflict_id,)
+            ).fetchone()["status"]
+            rows = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="座位",
+                memory_key="seat",
+            )
+        self.assertEqual(duplicate_id, correction_id)
+        self.assertEqual(conflict_status, "superseded")
+        self.assertEqual([row["id"] for row in rows], [correction_id])
+
     def test_expired_duplicate_can_be_written_again(self) -> None:
         with MemoryStore(self.database, clock=lambda: 10) as store:
             expired_id = self.write(store, expires_at=15)
@@ -97,7 +131,47 @@ class MemoryStoreTest(unittest.TestCase):
         with MemoryStore(self.database, clock=lambda: 10) as store:
             memory_id = self.write(store)
             with self.assertRaises(ValueError):
-                store.update(memory_id, value=" ", source_ref="session/2")
+                store.update(
+                    memory_id,
+                    owner_id="alice",
+                    namespace="assistant",
+                    value=" ",
+                    source_ref="session/2",
+                )
+
+    def test_update_enforces_scope_and_rejects_expired_record(self) -> None:
+        now = [10]
+        with MemoryStore(self.database, clock=lambda: now[0]) as store:
+            memory_id = self.write(store, expires_at=15)
+            for owner_id, namespace in (
+                ("mallory", "assistant"),
+                ("alice", "private"),
+            ):
+                with self.assertRaises(KeyError):
+                    store.update(
+                        memory_id,
+                        owner_id=owner_id,
+                        namespace=namespace,
+                        value="越权改写",
+                        source_ref="attacker/session",
+                    )
+            rows = store.recall(
+                owner_id="alice",
+                namespace="assistant",
+                query="座位",
+                memory_key="seat",
+            )
+            self.assertEqual(rows[0]["value"], "靠窗")
+
+            now[0] = 20
+            with self.assertRaises(KeyError):
+                store.update(
+                    memory_id,
+                    owner_id="alice",
+                    namespace="assistant",
+                    value="过期后改写",
+                    source_ref="session/expired",
+                )
 
     def test_source_boundary_rejects_external_instruction(self) -> None:
         with MemoryStore(self.database) as store:
@@ -158,8 +232,27 @@ class MemoryStoreTest(unittest.TestCase):
                 ),
                 [],
             )
-            self.assertFalse(store.delete(memory_id=memory_id, owner_id="mallory"))
-            self.assertTrue(store.delete(memory_id=memory_id, owner_id="alice"))
+            self.assertFalse(
+                store.delete(
+                    memory_id=memory_id,
+                    owner_id="mallory",
+                    namespace="assistant",
+                )
+            )
+            self.assertFalse(
+                store.delete(
+                    memory_id=memory_id,
+                    owner_id="alice",
+                    namespace="private",
+                )
+            )
+            self.assertTrue(
+                store.delete(
+                    memory_id=memory_id,
+                    owner_id="alice",
+                    namespace="assistant",
+                )
+            )
             self.assertEqual(
                 store.recall(
                     owner_id="alice",

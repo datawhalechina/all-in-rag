@@ -60,7 +60,7 @@ correction-aware-agent-memory/
 
 每条记录包含 `owner_id`、`namespace`、`memory_key`、值、类型、来源、时间、有效期和状态。来源引用 `source_ref` 必填，使每次写入都能回到会话消息或文档。
 
-同一用户、命名空间和 key 下写入 `correction` 时，全部未过期的活动冲突都会变为 `superseded`，纠正记录通过 `supersedes_id` 指向其中最新的旧版本。`update` 同样新增版本而非原地覆盖。重复写入相同活动内容会返回原 ID，并留下新的来源审计事件；已经过期的同值记录不会阻止重新写入。
+同一用户、命名空间和 key 下写入 `correction` 时，全部未过期的活动冲突都会变为 `superseded`，纠正记录通过 `supersedes_id` 指向其中最新的旧版本。即使重复写入已有纠正，也会先清理此后出现的新冲突，再返回原 ID 并留下来源审计事件。`update` 同样新增版本而非原地覆盖，但调用方必须提供匹配的 `owner_id + namespace`，且不能更新已经过期的版本。
 
 ### 4.2 召回
 
@@ -76,7 +76,7 @@ correction-aware-agent-memory/
 
 ### 4.3 删除
 
-`delete(memory_id, owner_id)` 要求所有者匹配，并将记录软删除。软删除便于本地演示审计，但生产系统还应设置审计保留期限，并在合规要求下执行物理清除、备份清除和下游缓存失效。
+`delete(memory_id, owner_id, namespace)` 要求所有者和命名空间同时匹配，并将记录软删除。软删除便于本地演示审计，但生产系统还应设置审计保留期限，并在合规要求下执行物理清除、备份清除和下游缓存失效。
 
 ### 4.4 SQLite 持久化
 
@@ -130,10 +130,14 @@ with MemoryStore("memory.sqlite3") as store:
         memory_key="seat",
         limit=1,
     )
-    store.delete(memory_id=memory_id, owner_id="user-001")
+    store.delete(
+        memory_id=memory_id,
+        owner_id="user-001",
+        namespace="assistant",
+    )
 ```
 
-调用方不应让 LLM 自由生成 `owner_id`、`source_type` 或权限信息；这些字段应由已认证的应用层注入。
+调用方不应让 LLM 自由生成 `owner_id`、`namespace`、`source_type` 或权限信息；这些字段应由已认证的应用层注入。`update` 和 `delete` 的作用域参数用于 SQL 层授权约束，不应来自不可信请求正文。
 
 ## 七、跨会话评估
 
@@ -173,7 +177,7 @@ Token Overhead 是无 tokenizer 条件下的代理量，不等同于任何模型
 
 - 必填来源引用，保留版本链和审计事件；
 - 外部资料不能写成用户纠正、偏好或规则；
-- 用户和命名空间严格隔离；
+- 写入、更新、召回和删除都在 SQL 层约束用户与命名空间；
 - 支持到期与所有者约束下的显式删除；
 - 无关候选零重叠时不召回。
 
