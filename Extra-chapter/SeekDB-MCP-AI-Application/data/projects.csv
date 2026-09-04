@@ -1,0 +1,9 @@
+﻿name,summary,tags,stars,language,repo
+rag-lite,Lightweight RAG pipeline for markdown and PDF notes with hybrid search and reranking.,rag;retrieval;nlp,1200,Python,example/rag-lite
+paper-scout,Academic paper finder with semantic search over abstracts and citations.,search;papers;nlp,800,Python,example/paper-scout
+shop-match,Product recommendation engine using hybrid search and user feedback loops.,recommendation;search,560,TypeScript,example/shop-match
+kb-assistant,Internal knowledge base QA bot with structured metadata filters.,kb;qa;enterprise,640,Python,example/kb-assistant
+code-skim,Repository discovery tool that ranks projects by topic and activity.,discovery;opensource,430,Go,example/code-skim
+doc-fusion,Multi-source documentation RAG with chunking and evaluation.,rag;docs;eval,980,Python,example/doc-fusion
+news-brief,News summarizer with semantic clustering and topic alerts.,summarization;nlp,510,Rust,example/news-brief
+obsidian-qa,Personal notes QA with embeddings and tag-aware search.,notes;personal;qa,300,Python,example/obsidian-qa
