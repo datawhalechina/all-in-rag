@@ -153,8 +153,6 @@
 ### Extra-chapter
 
 - [Neo4J 简单应用](./Extra-chapter/Neo4J-Simple-Application/readme.md) （贡献者: [dalvqw](https://github.com/FutureUnreal)）
--
--
 - [多模态 Omni Embedding 实践（Jina v5-omni）](./Extra-chapter/multimodal-embedding-omni-practice/readme.md)（贡献者: [Alden](https://github.com/AldenWangExis)）
 
 ## 目录结构说明
