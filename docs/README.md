@@ -92,18 +92,21 @@
 ### 第一部分：RAG基础入门
 
 **第一章 解锁RAG** [📖 查看章节](chapter1)
+
 1. [x] [RAG简介](chapter1/01_RAG_intro.md) - RAG技术概述与应用场景
 2. [x] [准备工作](chapter1/02_preparation.md) - 环境配置与工具准备
 3. [x] [四步构建RAG](chapter1/03_get_start_rag.md) - 快速上手RAG开发
 4. [x] [附：环境部署](chapter1/virtualenv.md) - Python虚拟环境部署方案补充 (贡献者: [@anarchysaiko](https://github.com/anarchysaiko))
 
 **第二章 数据准备** [📖 查看章节](chapter2)
+
 1. [x] [数据加载](chapter2/04_data_load.md) - 多格式文档处理与加载
 2. [x] [文本分块](chapter2/05_text_chunking.md) - 文本切分策略与优化
 
 ### 第二部分：索引构建与优化
 
 **第三章 索引构建** [📖 查看章节](chapter3)
+
 1. [x] [向量嵌入](chapter3/06_vector_embedding.md) - 文本向量化技术详解
 2. [x] [多模态嵌入](chapter3/07_multimodal_embedding.md) - 图文多模态向量化
 3. [x] [向量数据库](chapter3/08_vector_db.md) - 向量存储与检索系统
@@ -113,6 +116,7 @@
 ### 第三部分：检索技术进阶
 
 **第四章 检索优化** [📖 查看章节](chapter4)
+
 1. [x] [混合检索](chapter4/11_hybrid_search.md) - 稠密+稀疏检索融合
 2. [x] [查询构建](chapter4/12_query_construction.md) - 智能查询理解与构建
 3. [x] [Text2SQL](chapter4/13_text2sql.md) - 自然语言转SQL查询
@@ -122,9 +126,11 @@
 ### 第四部分：生成与评估
 
 **第五章 生成集成** [📖 查看章节](chapter5)
+
 1. [x] [格式化生成](chapter5/16_formatted_generation.md) - 结构化输出与格式控制
 
 **第六章 RAG系统评估** [📖 查看章节](chapter6)
+
 1. [x] [评估介绍](chapter6/18_system_evaluation.md) - RAG系统评估方法论
 2. [x] [评估工具](chapter6/19_common_tools.md) - 常用评估工具与指标
 
@@ -135,6 +141,7 @@
 1. [x] [基于知识图谱的RAG](chapter7/20_kg_rag.md)
 
 **第八章 项目实战一** [📖 查看章节](chapter8)
+
 1. [x] [环境配置与项目架构](chapter8/01_env_architecture.md)
 2. [x] [数据准备模块实现](chapter8/02_data_preparation.md)
 3. [x] [索引构建与检索优化](chapter8/03_index_retrieval.md)
