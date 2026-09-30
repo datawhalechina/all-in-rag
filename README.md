@@ -153,7 +153,9 @@
 ### Extra-chapter
 
 - [Neo4J 简单应用](./Extra-chapter/Neo4J-Simple-Application/readme.md) （贡献者: [dalvqw](https://github.com/FutureUnreal)）
-- [多模态 Omni Embedding 实践（Jina v5-omni）](./Extra-chapter/multimodal-embedding-omni-practice/readme.md)（优化中）
+-
+-
+- [多模态 Omni Embedding 实践（Jina v5-omni）](./Extra-chapter/multimodal-embedding-omni-practice/readme.md)（贡献者: [Alden](https://github.com/AldenWangExis)）
 
 > 如果你在使用 RAG / 向量数据库 / Agentic RAG 等相关技术时，也有值得分享的经验与专题内容，非常欢迎以独立章节的形式投稿到 [Extra Chapter](./Extra-chapter/) 中。提交前请先阅读 Extra Chapter 的[贡献与 PR 指南](./Extra-chapter/README.md)，我们会根据内容的完整度、实践深度与参考价值综合评估是否合并，并视情况在主教程中进行引用或扩展说明。
 

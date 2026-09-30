@@ -150,11 +150,12 @@
 
 **第十章 项目实战二（选修篇）** [📖 查看章节](chapter10) *规划中*
 
-### 第六部分：知识拓展
+### Extra-chapter
 
-**第十一章 Neo4J 简单应用** [📖 查看章节](chapter11)
-1. [x] [知识图谱与 Neo4j 安装](chapter11/01_knowledge_graph.md)
-2. [x] [Neo4j 基本使用](chapter11/02_neo4j.md)
+- [Neo4J 简单应用](./Extra-chapter/Neo4J-Simple-Application/readme.md) （贡献者: [dalvqw](https://github.com/FutureUnreal)）
+-
+-
+- [多模态 Omni Embedding 实践（Jina v5-omni）](./Extra-chapter/multimodal-embedding-omni-practice/readme.md)（贡献者: [Alden](https://github.com/AldenWangExis)）
 
 ## 目录结构说明
 

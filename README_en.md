@@ -57,6 +57,7 @@ This project is a comprehensive RAG (Retrieval-Augmented Generation) technology 
 With the rapid development of large language models, RAG technology has become the core technology for building intelligent Q&A systems and knowledge retrieval applications. However, existing RAG tutorials are often scattered and lack systematicity, making it difficult for beginners to form a complete understanding of the technical system.
 
 Starting from practice and combining the latest RAG technology development trends, this project builds a complete RAG learning system to help developers:
+
 - Systematically master the theoretical foundation and practical skills of RAG technology
 - Understand the complete architecture of RAG systems and the role of each component
 - Develop the ability to independently develop RAG applications
@@ -65,12 +66,14 @@ Starting from practice and combining the latest RAG technology development trend
 ## Target Audience
 
 **This project is suitable for the following groups:**
+
 - Developers with Python programming foundation who are interested in RAG technology
 - AI engineers who want to systematically learn RAG technology
 - Product developers who want to build intelligent Q&A systems
 - Researchers with learning needs for retrieval-augmented generation technology
 
 **Prerequisites:**
+
 - Master Python basic syntax and usage of common libraries
 - Ability to use Docker simply
 - Understanding of basic LLM concepts (recommended but not required)
