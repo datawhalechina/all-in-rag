@@ -109,7 +109,7 @@ def build_knowledge_base(
         Chroma 向量存储实例
     """
     from langchain_openai import OpenAIEmbeddings
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     from langchain_core.documents import Document
 
     text_splitter = RecursiveCharacterTextSplitter(
