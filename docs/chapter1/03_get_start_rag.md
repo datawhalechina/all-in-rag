@@ -23,6 +23,35 @@ cd code/C1
 
 每章内容中的代码文件都存放在 `code/Cx` 目录下，其中 `x` 表示章节编号。
 
+### 1.3 确认 API 密钥环境变量
+
+本节示例默认从环境变量 `DEEPSEEK_API_KEY` 中读取 API 密钥。运行前请先确认该变量已在当前终端生效：
+
+```bash
+source ~/.bashrc
+test -n "$DEEPSEEK_API_KEY" && echo "DEEPSEEK_API_KEY 已配置"
+```
+
+如果你在 `~/.bashrc` 中配置的是 `AIHUBMIX_API_KEY`，而不是 `DEEPSEEK_API_KEY`，可以在当前终端执行以下命令，将其映射为示例脚本默认读取的变量：
+
+```bash
+export DEEPSEEK_API_KEY="$AIHUBMIX_API_KEY"
+```
+
+该映射只对当前终端会话生效，无需修改示例代码。或者，也可以将 `code/C1/01_langchain_example.py` 中的：
+
+```python
+api_key=os.getenv("DEEPSEEK_API_KEY"),
+```
+
+修改为：
+
+```python
+api_key=os.getenv("AIHUBMIX_API_KEY"),
+```
+
+以上两种方式任选其一即可。环境变量名称必须与代码中 `os.getenv(...)` 读取的名称一致，否则程序会因读取不到 API 密钥而报错。请勿在终端输出真实密钥。
+
 ## 二、运行RAG示例代码
 
 完成上述所有设置后，就可以运行RAG示例了。
@@ -107,7 +136,7 @@ usage_metadata={
 import os
 # os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 from dotenv import load_dotenv
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
