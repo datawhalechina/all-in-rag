@@ -64,7 +64,7 @@ response_metadata={
         'prompt_cache_hit_tokens': 5568,
         'prompt_cache_miss_tokens': 8
     },
-    'model_name': 'deepseek-chat',
+    'model_name': 'deepseek-v4-flash',
     'system_fingerprint': 'fp_8802369eaa_prod0425fp8',
     'id': '67a0580d-78b1-44d6-bccf-f654ae0e9bba',
     'service_tier': None,
@@ -88,7 +88,7 @@ usage_metadata={
 - **`additional_kwargs`**: 包含一些额外的参数，在这个例子中是 `{'refusal': None}`，表示模型没有拒绝回答。
 - **`response_metadata`**: 包含了关于LLM响应的元数据。
     - `token_usage`: 显示了本次调用消耗的token数量，包括完成（completion_tokens）、提示（prompt_tokens）和总量（total_tokens）。
-    - `model_name`: 使用的LLM模型名称，当前是 `deepseek-chat`。
+    - `model_name`: 使用的LLM模型名称，当前是 `deepseek-v4-flash`。
     - `system_fingerprint`, `id`, `service_tier`, `finish_reason`, `logprobs`: 这些是更详细的API响应信息，例如 `finish_reason: 'stop'` 表示模型正常完成了生成。
 - **`id`**: 本次运行的唯一标识符。
 - **`usage_metadata`**: 与 `response_metadata` 中的 `token_usage` 类似，提供了输入和输出token的统计。
@@ -107,12 +107,12 @@ usage_metadata={
 import os
 # os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 from dotenv import load_dotenv
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_deepseek import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 # 加载环境变量
 load_dotenv()
@@ -120,10 +120,10 @@ load_dotenv()
 
 ### 3.2 数据准备
 
-- **加载原始文档**: 先定义Markdown文件的路径，然后使用`TextLoader`加载该文件作为知识源。
+- **加载原始文档**: 先定义Markdown文件的路径，然后使用`UnstructuredMarkdownLoader`加载该文件作为知识源。
     ```python
     markdown_path = "../../data/C1/markdown/easy-rl-chapter1.md"
-    loader = TextLoader(markdown_path)
+    loader = UnstructuredMarkdownLoader(markdown_path)
     docs = loader.load()
     ```
 - **文本分块 (Chunking)**: 为了便于后续的嵌入和检索，长文档被分割成较小的、可管理的文本块（chunks）。这里采用了递归字符分割策略，使用其默认参数进行分块。当不指定参数初始化 `RecursiveCharacterTextSplitter()` 时，其默认行为旨在最大程度保留文本的语义结构：
@@ -132,7 +132,7 @@ load_dotenv()
     - **默认块大小与重叠**: 使用其基类 `TextSplitter` 中定义的默认参数 `chunk_size=4000`（块大小）和 `chunk_overlap=200`（块重叠）。这些参数确保文本块符合预定的大小限制，并通过重叠来减少上下文信息的丢失。
     ```python
     text_splitter = RecursiveCharacterTextSplitter()
-    texts = text_splitter.split_documents(docs)
+    chunks = text_splitter.split_documents(docs)
     ```
 
 ### 3.3 索引构建
@@ -147,10 +147,10 @@ load_dotenv()
         encode_kwargs={'normalize_embeddings': True}
     )
     ```
-- **构建向量存储**: 将分割后的文本块 (`texts`) 通过初始化好的嵌入模型转换为向量表示，然后使用`InMemoryVectorStore`将这些向量及其对应的原始文本内容添加进去，从而在内存中构建出一个向量索引。
+- **构建向量存储**: 将分割后的文本块 (`chunks`) 通过初始化好的嵌入模型转换为向量表示，然后使用`InMemoryVectorStore`将这些向量及其对应的原始文本内容添加进去，从而在内存中构建出一个向量索引。
     ```python
     vectorstore = InMemoryVectorStore(embeddings)
-    vectorstore.add_documents(texts)
+    vectorstore.add_documents(chunks)
     ```
     这个过程完成后，便构建了一个可供查询的知识索引。
 
@@ -190,17 +190,17 @@ load_dotenv()
     回答:"""
                                               )
     ```
-- **配置大语言模型**: 初始化 `ChatOpenAI` 客户端，配置所用模型（`glm-4.7-flash-free`）、生成答案的温度参数（`temperature=0.7`）、最大Token数 (`max_tokens=2048`) 以及API密钥（从环境变量加载）和 url。
+- **配置大语言模型**: 初始化 `ChatOpenAI` 客户端，配置所用模型（`glm-4.7-flash-free`）、生成答案的温度参数（`temperature=0.7`）、最大Token数 (`max_tokens=4096`) 以及 API 密钥（从 `AIHUBMIX_API_KEY` 环境变量加载）和 URL。
     ```python
     llm = ChatOpenAI(
         model="glm-4.7-flash-free",
         temperature=0.7,
-        max_tokens=2048,
-        api_key=os.getenv("DEEPSEEK_API_KEY")
+        max_tokens=4096,
+        api_key=os.getenv("AIHUBMIX_API_KEY"),
         base_url="https://aihubmix.com/v1"
     )
     ```
-- **调用LLM生成答案并输出**: 将用户问题 (`question`) 和先前准备好的上下文 (`docs_content`) 格式化到提示模板中，然后调用ChatDeepSeek的`invoke`方法获取生成的答案。
+- **调用LLM生成答案并输出**: 将用户问题 (`question`) 和先前准备好的上下文 (`docs_content`) 格式化到提示模板中，然后调用 `ChatOpenAI` 的 `invoke` 方法获取生成的答案。
     ```python
     answer = llm.invoke(prompt.format(question=question, context=docs_content))
     print(answer)
@@ -226,15 +226,15 @@ load_dotenv()
 
 Settings.llm = OpenAILike(
     model="glm-4.7-flash-free",
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=os.getenv("AIHUBMIX_API_KEY"),
     api_base="https://aihubmix.com/v1",
     is_chat_model=True
 )
 Settings.embed_model = HuggingFaceEmbedding("BAAI/bge-small-zh-v1.5")
 
-documents = SimpleDirectoryReader(input_files=["../../data/C1/markdown/easy-rl-chapter1.md"]).load_data()
+docs = SimpleDirectoryReader(input_files=["../../data/C1/markdown/easy-rl-chapter1.md"]).load_data()
 
-index = VectorStoreIndex.from_documents(documents)
+index = VectorStoreIndex.from_documents(docs)
 
 query_engine = index.as_query_engine()
 
