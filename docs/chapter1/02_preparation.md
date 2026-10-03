@@ -136,16 +136,16 @@ GitHub Codespaces 是 GitHub 提供的一项服务，允许开发者在云端创
     vim ~/.bashrc
     ```
 
-2.  输入 `i` 进入编辑模式，在文件末尾添加以下行，将 `[你的大模型 API 密钥]` 替换为你自己的密钥：
+2.  输入 `i` 进入编辑模式。教程中的 C1 示例默认使用 `AIHubmix`，请在文件末尾添加：
 
     ```bash
-    export DEEPSEEK_API_KEY=[你的大模型 API 密钥]
+    export AIHUBMIX_API_KEY=[你的 AIHubmix API 密钥]
     ```
 
-    如果选择的是 `AIHubmix` 平台，为了增加辨识度也可以使用：
+    如果将示例切换为注释中提供的 `DeepSeek` 配置，则改为设置：
 
     ```bash
-    export AIHUBMIX_API_KEY=[你的大模型 API 密钥]
+    export DEEPSEEK_API_KEY=[你的 DeepSeek API 密钥]
     ```
 
     > 不要带 `[]`
@@ -260,16 +260,16 @@ Cloud Studio 是腾讯云推出的一款基于浏览器的集成开发环境（I
     vim ~/.bashrc
     ```
 
-2.  输入 `i` 进入编辑模式，在文件末尾添加以下行，将 `[你的大模型 API 密钥]` 替换为你自己的密钥：
+2.  输入 `i` 进入编辑模式。教程中的 C1 示例默认使用 `AIHubmix`，请在文件末尾添加：
 
     ```bash
-    export DEEPSEEK_API_KEY=[你的大模型 API 密钥]
+    export AIHUBMIX_API_KEY=[你的 AIHubmix API 密钥]
     ```
 
-    如果选择的是 `AIHubmix` 平台，为了增加辨识度也可以使用：
+    如果将示例切换为注释中提供的 `DeepSeek` 配置，则改为设置：
 
     ```bash
-    export AIHUBMIX_API_KEY=[你的大模型 API 密钥]
+    export DEEPSEEK_API_KEY=[你的 DeepSeek API 密钥]
     ```
 
     > 不要带 `[]`
@@ -328,9 +328,11 @@ Cloud Studio 是腾讯云推出的一款基于浏览器的集成开发环境（I
 
     ![高级系统设置](./images/1_2_13.webp)
 
-4.  在 “环境变量” 对话框中，点击 “新建”（在 “用户变量” 部分下），然后输入以下信息：
-    - 变量名：DEEPSEEK_API_KEY
-    - 变量值：[你的 Deepseek API 密钥]
+4.  在 “环境变量” 对话框中，点击 “新建”（在 “用户变量” 部分下）。教程中的 C1 示例默认使用 `AIHubmix`，请输入：
+    - 变量名：`AIHUBMIX_API_KEY`
+    - 变量值：[你的 AIHubmix API 密钥]
+
+    如果将示例切换为注释中提供的 `DeepSeek` 配置，则使用变量名 `DEEPSEEK_API_KEY` 和对应的 DeepSeek API 密钥。
 
     ![高级系统设置](./images/1_2_14.webp)
 

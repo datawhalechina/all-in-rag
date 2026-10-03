@@ -2,6 +2,8 @@
 
 通过第一节的学习，我们对RAG已经有了基本认识，并且也准备好了虚拟环境和api_key，接下来将尝试使用[**LangChain**](https://python.langchain.com/docs/introduction/)和[**LlamaIndex**](https://docs.llamaindex.ai/en/stable/)框架完成第一个RAG应用的实现与运行。通过一个示例，演示如何加载本地Markdown文档，利用嵌入模型处理文本，并结合大型语言模型（LLM）来回答与文档内容相关的问题。
 
+> 本节两个示例默认使用 AIHubmix。运行前请按照上一节配置 `AIHUBMIX_API_KEY`；如果改用代码注释中的 DeepSeek 配置，则设置 `DEEPSEEK_API_KEY`。
+
 ## 一、启动虚拟环境
 
 ### 1.1 激活虚拟环境
@@ -112,10 +114,17 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_deepseek import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 # 加载环境变量
 load_dotenv()
+
+aihubmix_api_key = os.getenv("AIHUBMIX_API_KEY")
+if not aihubmix_api_key:
+    raise ValueError(
+        "未检测到 AIHUBMIX_API_KEY，请先参考 docs/chapter1/02_preparation.md "
+        "配置 AIHubmix API 密钥。"
+    )
 ```
 
 ### 3.2 数据准备
@@ -196,11 +205,11 @@ load_dotenv()
         model="glm-4.7-flash-free",
         temperature=0.7,
         max_tokens=2048,
-        api_key=os.getenv("DEEPSEEK_API_KEY")
+        api_key=aihubmix_api_key,
         base_url="https://aihubmix.com/v1"
     )
     ```
-- **调用LLM生成答案并输出**: 将用户问题 (`question`) 和先前准备好的上下文 (`docs_content`) 格式化到提示模板中，然后调用ChatDeepSeek的`invoke`方法获取生成的答案。
+- **调用LLM生成答案并输出**: 将用户问题 (`question`) 和先前准备好的上下文 (`docs_content`) 格式化到提示模板中，然后调用 `ChatOpenAI` 客户端的 `invoke` 方法获取生成的答案。
     ```python
     answer = llm.invoke(prompt.format(question=question, context=docs_content))
     print(answer)
@@ -224,9 +233,16 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 load_dotenv()
 
+aihubmix_api_key = os.getenv("AIHUBMIX_API_KEY")
+if not aihubmix_api_key:
+    raise ValueError(
+        "未检测到 AIHUBMIX_API_KEY，请先参考 docs/chapter1/02_preparation.md "
+        "配置 AIHubmix API 密钥。"
+    )
+
 Settings.llm = OpenAILike(
     model="glm-4.7-flash-free",
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=aihubmix_api_key,
     api_base="https://aihubmix.com/v1",
     is_chat_model=True
 )
