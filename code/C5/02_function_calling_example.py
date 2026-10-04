@@ -15,6 +15,8 @@ def send_messages(messages, tools=None):
         tools=tools,
         tool_choice="auto",  # 让模型自主决定是否调用工具
     )
+    if not response.choices or response.choices[0].message is None:
+        raise ValueError("LLM returned empty or filtered response")
     return response.choices[0].message
 
 # 1. 定义工具（函数）的 Schema
