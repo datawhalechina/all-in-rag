@@ -199,10 +199,11 @@ def setup_retrievers(self):
         search_kwargs={"k": 5}
     )
 
-    # BM25检索器
+    # BM25检索器（用jieba对中文分词，默认的空格分词对中文无效）
     self.bm25_retriever = BM25Retriever.from_documents(
         self.chunks,
-        k=5
+        k=5,
+        preprocess_func=jieba.lcut
     )
 ```
 
