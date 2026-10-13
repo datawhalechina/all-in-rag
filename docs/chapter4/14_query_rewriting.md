@@ -296,7 +296,7 @@ full_chain = RunnableLambda(route)
 
 *   **基于LLM的意图识别**：这是 LlamaIndex 的主要实现方式。通过 `RouterQueryEngine` 来管理一组 `QueryEngineTool`。每个 `Tool` 都包含一个查询引擎和一段描述其功能的文本。路由器会利用一个 `Selector`（如 `LLMSingleSelector` 或更稳定的 `PydanticSingleSelector`）来让 LLM 根据工具的描述文本和用户问题进行语义匹配，从而选择一个或多个最合适的工具来执行。
 
-*   **嵌入相似性路由**：LlamaIndex 没有提供直接基于向量相似度计算的独立路由组件。它的“语义路由”是融合在基于 LLM 的意图识别中的——即让 LLM 理解每个 `Tool` 描述的 *语义*，并据此做出决策。这种方式更灵活，能够处理更复杂的路由逻辑，而不仅仅是文本相似度匹配。
+*   **嵌入相似性路由**：LlamaIndex 提供了独立的嵌入相似性选择器 `EmbeddingSingleSelector`（`llama_index.core.selectors`）。它用嵌入模型分别编码用户查询和每个 `Tool` 的描述，再按向量相似度选出最匹配的工具，无需 LLM 分类，延迟通常更低。更复杂、需要自然语言推理的路由，仍可使用 `LLMSingleSelector` 或 `PydanticSingleSelector`。源码见 [embedding_selectors.py](https://github.com/run-llama/llama_index/blob/main/llama-index-core/llama_index/core/selectors/embedding_selectors.py)。
 
 ## 参考文献
 
