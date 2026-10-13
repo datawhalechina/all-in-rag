@@ -133,7 +133,8 @@ class AgenticRAG:
             {
                 "refine": "refine_query",
                 "generate": "generate",
-                "max_iter": END,
+                # 达到轮次上限时停止继续检索，走已有生成节点（即使信息不够）
+                "max_iter": "generate",
             },
         )
 

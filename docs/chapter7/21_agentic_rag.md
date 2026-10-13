@@ -189,7 +189,7 @@ def _refine_query(self, state):
 ```python
 def _should_continue(self, state):
     if state["iteration"] >= state["max_iterations"]:
-        return "max_iter"    # 强制结束
+        return "max_iter"    # 强制生成（路由到 generate，而不是直接 END）
     if state["critique_result"]["is_sufficient"]:
         return "generate"     # 信息充分，生成答案
     return "refine"           # 不足，改写重试
