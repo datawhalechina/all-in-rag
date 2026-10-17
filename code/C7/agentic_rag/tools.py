@@ -30,6 +30,9 @@ class VectorSearchTool:
     def __init__(self, vectorstore: Chroma):
         self.vectorstore = vectorstore
 
+    # @tool 装饰器把普通方法转成 LangChain 工具：
+    # - 函数签名 → 工具的参数 schema（告诉 LLM 该传什么参数）
+    # - docstring → 工具的 description（告诉 LLM 何时该用这个工具）
     @tool
     def search(self, query: str, k: int = 5) -> str:
         """
@@ -112,17 +115,21 @@ def build_knowledge_base(
     from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain_core.documents import Document
 
+    # 分块：中文标点分隔符让分块尽量在句子边界断开，块间保留 overlap 维持上下文连续
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         separators=["\n\n", "\n", "。", "，", " ", ""],
     )
 
+    # 把纯文本包装成 LangChain 的 Document 对象再切块
     docs = [Document(page_content=text) for text in documents]
     chunks = text_splitter.split_documents(docs)
 
+    # OpenAI 嵌入模型：把每个文本块编码成向量
     embeddings = OpenAIEmbeddings(model=embedding_model_name)
 
+    # 分块 → 嵌入 → 写入 Chroma（persist_directory 为 None 时只存内存）
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,

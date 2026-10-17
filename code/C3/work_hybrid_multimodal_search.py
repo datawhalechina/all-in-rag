@@ -11,6 +11,12 @@ from PIL import Image
 from typing import List, Dict, Any
 from dataclasses import dataclass
 
+# 本地 bge-m3 模型路径，传本地路径可跳过 HuggingFace 下载（镜像站对 imgs/.DS_Store 返回 403）
+BGE_M3_MODEL_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "../data/models/bge-m3",
+)
+
 @dataclass
 class DragonImage:
     """龙类图像数据类"""
@@ -63,7 +69,7 @@ class HybridMultimodalEncoder:
         self.visual_model.eval()
         
         # 初始化BGE-M3模型（用于混合检索）
-        self.bge_m3 = BGEM3EmbeddingFunction(use_fp16=False, device="cpu")
+        self.bge_m3 = BGEM3EmbeddingFunction(model_name=BGE_M3_MODEL_PATH, use_fp16=False, device="cpu")
         print(f"BGE-M3 密集向量维度: {self.bge_m3.dim['dense']}")
 
     def encode_multimodal(self, image_path: str, text: str) -> list[float]:

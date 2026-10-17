@@ -41,6 +41,9 @@ class AgentState(TypedDict):
     current_query: str
 
     # 对话/推理历史
+    # Annotated[List, operator.add] 是 LangGraph 的 reducer 写法：
+    # 节点返回新值时不是覆盖旧值，而是用 operator.add 把新值累加（拼接）到旧值上，
+    # 这样多轮对话的消息不会互相覆盖
     messages: Annotated[List, operator.add]
 
     # 检索历史：记录每一轮的查询、工具、结果、评估
@@ -110,9 +113,11 @@ class AgenticRAG:
     # ----------------------------------------------------------
     def _build_graph(self) -> StateGraph:
         """构建 LangGraph 状态图"""
+        # StateGraph 是 LangGraph 的核心抽象：用「节点 + 边」描述 Agent 流程。
+        # 节点是处理函数（接收 state、返回 state 增量），边决定执行顺序
         workflow = StateGraph(AgentState)
 
-        # 添加节点
+        # 添加节点：每个节点名对应一个处理函数
         workflow.add_node("analyze_query", self._analyze_query)
         workflow.add_node("retrieve", self._retrieve)
         workflow.add_node("critique", self._critique)
@@ -126,7 +131,8 @@ class AgenticRAG:
         workflow.add_edge("analyze_query", "retrieve")
         workflow.add_edge("retrieve", "critique")
 
-        # 条件边：根据评估结果决定下一步
+        # 条件边：根据评估结果决定下一步。
+        # 映射表把 _should_continue 的返回值路由到对应节点，END 表示流程结束
         workflow.add_conditional_edges(
             "critique",
             self._should_continue,
@@ -140,6 +146,7 @@ class AgenticRAG:
         workflow.add_edge("refine_query", "retrieve")
         workflow.add_edge("generate", END)
 
+        # compile() 把图编译成可执行对象（支持 .invoke() / .stream()）
         return workflow.compile()
 
     # ----------------------------------------------------------
@@ -230,6 +237,8 @@ class AgenticRAG:
                 continue
 
             try:
+                # 两种工具的参数格式不同：Tavily 要求 {"query": ...} 字典，
+                # 自定义向量检索工具接收纯字符串
                 if tool_name == "web_search":
                     result = tool.invoke({"query": current_query})
                 else:
@@ -258,7 +267,8 @@ class AgenticRAG:
         )
         state["iteration"] += 1
 
-        # 收集并去重文档
+        # 收集并去重文档：用内容 hash 判断是否已见过。
+        # 注意 hash() 只在单次进程内稳定，这里仅用于本次运行的会话内去重，足够
         for r in retrieval_results:
             if "result" in r and r["result"]:
                 result_str = str(r["result"])
@@ -534,6 +544,8 @@ class AgenticRAG:
             final_answer="",
         )
 
+        # invoke 同步执行整张图：从入口节点出发沿边执行，直到所有路径到达 END。
+        # 返回值是最终 state（所有字段的最新值）
         result = self.graph.invoke(initial_state)
 
         if self.verbose:
@@ -568,5 +580,7 @@ class AgenticRAG:
             final_answer="",
         )
 
+        # stream 与 invoke 的区别：invoke 一次性返回最终状态；
+        # stream 逐步 yield 每个节点执行后的状态快照，便于 UI 实时展示进度
         for event in self.graph.stream(initial_state):
             yield event

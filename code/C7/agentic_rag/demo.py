@@ -16,6 +16,10 @@ Agentic RAG 完整演示脚本
     export TAVILY_API_KEY="your-key"  # 可选，用于web搜索
 """
 
+from dotenv import load_dotenv
+# 从 .env 文件加载环境变量（例如 OPENAI_API_KEY、TAVILY_API_KEY）
+load_dotenv()
+
 import sys
 import os
 import json
@@ -172,16 +176,17 @@ def main():
         print("   export OPENAI_API_KEY='sk-...'")
         sys.exit(1)
 
+    # 主模型：temperature=0 让分析/评估/生成的结果尽量稳定、可复现
     llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
-    # 构建知识库
+    # 构建知识库：把 DEMO_DOCUMENTS 分块、嵌入、写入 Chroma 向量库
     print("  构建向量知识库...")
     vectorstore = build_knowledge_base(
         documents=DEMO_DOCUMENTS,
         collection_name="agentic_rag_demo",
     )
 
-    # 创建工具
+    # 创建工具：把向量库检索封装成 Agent 可调用的工具
     vs_tool_instance = VectorSearchTool(vectorstore)
     tools = [vs_tool_instance.search]
 
@@ -193,7 +198,7 @@ def main():
     else:
         print("  ℹ️  未设置 TAVILY_API_KEY，仅使用向量检索。设置后可启用web搜索。")
 
-    # 创建Agent
+    # 创建 Agent：max_iterations=3 限制最多检索 3 轮，防止无限循环烧 token
     agent = AgenticRAG(llm=llm, tools=tools, max_iterations=3, verbose=True)
 
     # ── 运行测试 ──
@@ -217,6 +222,7 @@ def main():
         print(f"📊 对比结果")
         print(f"{'─'*70}")
 
+        # 用 Unicode 制表线手绘一个对比表格（不引入额外依赖）
         print(f"\n{'┌' + '─'*30 + '┬' + '─'*20 + '┬' + '─'*20 + '┐'}")
         print(f"{'│ 指标':<30} {'│ Agentic RAG':<20} {'│ 传统 RAG':<20} │")
         print(f"{'├' + '─'*30 + '┼' + '─'*20 + '┼' + '─'*20 + '┤'}")
@@ -226,6 +232,8 @@ def main():
         print(f"{'└' + '─'*30 + '┴' + '─'*20 + '┴' + '─'*20 + '┘'}")
 
         # ── 轨迹摘要 ──
+        # trajectory 记录了每一步的决策（规划/检索/评估/改写/生成），
+        # 逐条打印以展示 Agent 的完整"思考过程"
         print(f"\n📋 Agentic RAG 决策轨迹摘要:")
         for step in agentic_result["trajectory"]:
             step_name = step.get("step", "unknown")

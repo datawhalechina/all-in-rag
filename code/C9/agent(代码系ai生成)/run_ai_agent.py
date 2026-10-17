@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from dotenv import load_dotenv
+# 从 .env 文件加载环境变量（例如 KIMI_API_KEY）
+load_dotenv()
+
 """
 简化的AI菜谱解析运行脚本
 """

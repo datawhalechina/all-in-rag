@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+# 从 .env 文件加载环境变量（例如 DEEPSEEK_API_KEY）
+load_dotenv()
+
 import os
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser

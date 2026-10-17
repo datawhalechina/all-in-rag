@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()  # 加载 .env（HF 镜像），必须在模型加载前
+
 from llama_index.core import VectorStoreIndex, Document, Settings
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
