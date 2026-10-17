@@ -17,6 +17,7 @@
 - `Neo4J 简单应用`（本目录下的第一个示例专题）
 - `PowerRAG SDK 文本检索 Demo`（上传 Markdown → 解析/切分/向量化 → Top‑K 检索）
 - `多模态 Omni Embedding 实践`（以 Jina v5-omni 为主的跨模态向量实践）
+- `RAG 面试题与参考答案（开放收录）`（按知识点分类，附参考答案与课程章节）
 
 我们希望通过 Extra Chapter：
 

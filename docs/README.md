@@ -161,6 +161,7 @@
 
 - [Neo4J 简单应用](./Extra-chapter/Neo4J-Simple-Application/readme.md) （贡献者: [dalvqw](https://github.com/FutureUnreal)）
 - [多模态 Omni Embedding 实践（Jina v5-omni）](./Extra-chapter/multimodal-embedding-omni-practice/readme.md)（贡献者: [Alden](https://github.com/AldenWangExis)）
+- [RAG 面试题与参考答案（开放收录）](./Extra-chapter/rag-interview-question-bank/readme.md)（按知识点分类，附参考答案与课程章节）
 
 ## 目录结构说明
 
