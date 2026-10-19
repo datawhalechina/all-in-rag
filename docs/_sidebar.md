@@ -27,6 +27,7 @@
     - 第七章 高级RAG架构（拓展选修篇）
         - [第一节 基于知识图谱的RAG](chapter7/20_kg_rag.md)
         - [第二节 Agentic RAG：让RAG具备自主决策能力](chapter7/21_agentic_rag.md)
+        - [第三节 层级式检索与长文档 RAG](chapter7/22_hierarchical_rag.md)
     - 第八章 项目实战一（基础篇）
         - [环境配置与项目架构](chapter8/01_env_architecture.md)
         - [数据准备模块实现](chapter8/02_data_preparation.md)
