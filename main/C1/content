@@ -1,0 +1,50 @@
+content=
+'文中举的例子包括：\n\n
+1. **图片分类**（监督学习示例，汽车、飞机、椅子等被标注的图片）\n
+2. **雅达利（Atari）游戏 Breakout**（打砖块游戏）\n3. **雅达利 Pong 游戏**\n
+4. **AlphaGo**（DeepMind 的强化学习算法打败人类顶尖棋手）\n
+5. **羚羊**（自然界中刚出生时通过试错学会站立和奔跑）\n
+6. **股票交易**（通过买卖股票和市场反馈学习）\n
+7. **玩雅达利游戏或其他电脑游戏**（通过不断试错通关）\n
+8. **小车上山（MountainCar-v0）**（Gym 库中的例子）\n
+9. **《太空侵略者》游戏**（免模型深度强化学习需要约两亿帧游戏画面）\n
+10. **选择餐馆**（探索和利用的例子：去最喜欢的餐馆 vs 搜索新餐馆）\n
+11. **做广告**（利用最优广告策略 vs 换新广告策略）\n
+12. **挖油**（在已知地方挖油 vs 在新地方挖油）\n
+13. **玩《街头霸王》游戏**（蹲在角落一直出脚 vs 尝试新招式）' 
+
+additional_kwargs=
+{
+    'refusal': None
+} 
+response_metadata=
+{
+    'token_usage': 
+    {
+        'completion_tokens': 258, 
+        'prompt_tokens': 5550, 
+        'total_tokens': 5808, 
+        'completion_tokens_details': None, 
+        'prompt_tokens_details': {'audio_tokens': None, 'cached_tokens': 0}, 
+        'prompt_cache_hit_tokens': 0, 
+        'prompt_cache_miss_tokens': 5550
+    }, 
+    'model_name': 'deepseek-flash', 
+    'system_fingerprint': 'aeb56401ca74e127821c4f9126dcb669', 
+    'id': '47d77cac-5f25-406b-b3e2-f955c738580f', 
+    'service_tier': None, 
+    'finish_reason': 'stop', 
+    'logprobs': None
+} 
+id='run--48a60d82-e55b-4691-bf6d-939b2164d7cf-0' 
+usage_metadata=
+{
+    'input_tokens': 5550, 
+    'output_tokens': 258, 
+    'total_tokens': 5808, 
+    'input_token_details': 
+    {
+        'cache_read': 0
+    }, 
+    'output_token_details': {}
+}

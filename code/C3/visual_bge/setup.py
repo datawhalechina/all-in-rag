@@ -9,10 +9,15 @@ setup(
     url='https://github.com/FlagOpen/FlagEmbedding/tree/master/research/visual_bge',
     packages=find_packages(),
     install_requires=[
-        'torchvision',
+    #    'torchvision',
         'timm',
         'einops',
         'ftfy'
     ],
+    # 留给用户选择
+    extras_require={
+        'cpu': ['torchvision'],
+        'gpu': ['torchvision']
+    },
     python_requires='>=3.6',
 )
