@@ -1,0 +1,10 @@
+# emomem 必需依赖
+numpy>=1.24
+pydantic>=2.13
+sqlite-vec>=0.1.6
+
+# 可选（不装不影响核心功能）：
+#   sqlcipher3              -> 数据加密（缺省用明文 SQLite）
+#   sentence-transformers   -> 语义召回（缺省降级为词法召回）
+#   python-dotenv           -> 读取 .env 中的 REVERIE_DATA_DIR（缺省无妨）
+#   lancedb                 -> 旧版 LanceDB 记忆的一次性迁移读取
