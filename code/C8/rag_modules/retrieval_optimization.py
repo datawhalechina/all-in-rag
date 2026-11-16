@@ -6,6 +6,7 @@ import logging
 import hashlib
 from typing import List, Dict, Any
 
+import jieba
 from langchain_community.vectorstores import FAISS
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
@@ -37,10 +38,11 @@ class RetrievalOptimizationModule:
             search_kwargs={"k": 5}
         )
 
-        # BM25检索器
+        # BM25检索器（用jieba对中文分词，默认的空格分词对中文无效）
         self.bm25_retriever = BM25Retriever.from_documents(
             self.chunks,
-            k=5
+            k=5,
+            preprocess_func=jieba.lcut
         )
 
         logger.info("检索器设置完成")
