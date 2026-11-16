@@ -18,6 +18,8 @@
 - `PowerRAG SDK 文本检索 Demo`（上传 Markdown → 解析/切分/向量化 → Top‑K 检索）
 - `多模态 Omni Embedding 实践`（以 Jina v5-omni 为主的跨模态向量实践）
 
+- [CRAG 论文精读：检索结果不可靠时，RAG 如何纠偏](./Corrective-RAG/readme.md)（原论文机制、三路纠偏与可运行路由示例）
+
 我们希望通过 Extra Chapter：
 
 - **补充主教程**：覆盖 RAG 周边的生态组件和工程化话题  
