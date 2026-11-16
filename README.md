@@ -139,6 +139,8 @@
 **第七章 高级RAG架构（拓展部分）** [📖 查看章节](./docs/chapter7)
 
 - [x] [基于知识图谱的RAG](./docs/chapter7/20_kg_rag.md)
+- [x] [Agentic RAG：让 RAG 具备自主决策能力](./docs/chapter7/21_agentic_rag.md)
+- [x] [基于层级摘要树的长文档检索（RAPTOR 思路）](./docs/chapter7/22_hierarchical_rag.md)
 
 **第八章 项目实战一** [📖 查看章节](./docs/chapter8)
 
