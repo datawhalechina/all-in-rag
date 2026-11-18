@@ -79,7 +79,7 @@ LangChain 提供了丰富且易于使用的文本分割器（Text Splitters）�
 下面的代码展示了如何配置一个固定大小分块器：
 
 ```python
-from langchain.text_splitter import CharacterTextSplitter
+from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 
 loader = TextLoader("../../data/C2/txt/蜂医.txt")
@@ -130,7 +130,7 @@ for i, chunk in enumerate(chunks[:5]):
 具体示例如下：
 
 ```python
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 
 loader = TextLoader("../../data/C2/txt/蜂医.txt")
