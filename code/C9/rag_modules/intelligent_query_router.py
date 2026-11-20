@@ -120,8 +120,10 @@ class IntelligentQueryRouter:
                 max_tokens=800
             )
             
+            if not response.choices or response.choices[0].message is None:
+                raise ValueError("LLM returned empty or filtered response")
             result = json.loads(response.choices[0].message.content.strip())
-            
+
             analysis = QueryAnalysis(
                 query_complexity=result.get("query_complexity", 0.5),
                 relationship_intensity=result.get("relationship_intensity", 0.5),

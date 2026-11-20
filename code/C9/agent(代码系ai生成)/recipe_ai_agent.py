@@ -112,8 +112,10 @@ class KimiRecipeAgent:
                     stream=False
                 )
                 
+                if not response.choices or response.choices[0].message is None:
+                    raise ValueError("LLM returned empty or filtered response")
                 return response.choices[0].message.content
-                    
+
             except Exception as e:
                 print(f"API调用错误 (尝试 {attempt + 1}): {str(e)}")
                 if attempt < max_retries - 1:

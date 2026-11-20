@@ -240,8 +240,10 @@ class GraphRAGRetrieval:
                 max_tokens=1000
             )
             
+            if not response.choices or response.choices[0].message is None:
+                raise ValueError("LLM returned empty or filtered response")
             result = json.loads(response.choices[0].message.content.strip())
-            
+
             return GraphQuery(
                 query_type=QueryType(result.get("query_type", "subgraph")),
                 source_entities=result.get("source_entities", []),

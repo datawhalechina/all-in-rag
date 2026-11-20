@@ -82,8 +82,10 @@ class GenerationIntegrationModule:
                 max_tokens=self.max_tokens
             )
             
+            if not response.choices or response.choices[0].message is None:
+                raise ValueError("LLM returned empty or filtered response")
             return response.choices[0].message.content.strip()
-            
+
         except Exception as e:
             logger.error(f"LightRAG答案生成失败: {e}")
             return f"抱歉，生成回答时出现错误：{str(e)}"

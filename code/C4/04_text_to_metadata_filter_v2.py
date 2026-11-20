@@ -116,6 +116,8 @@ JSON指令:"""
     
     try:
         import json
+        if not response.choices or response.choices[0].message is None:
+            raise ValueError("LLM returned empty or filtered response")
         instruction_str = response.choices[0].message.content
         instruction = json.loads(instruction_str)
         print(f"--- 生成的排序指令: {instruction} ---")
