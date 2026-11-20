@@ -52,7 +52,7 @@ llm = ChatOpenAI(
     model="glm-4.7-flash-free",
     temperature=0.7,
     max_tokens=4096,
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=os.getenv("AIHUBMIX_API_KEY"),
     base_url="https://aihubmix.com/v1"
 )
 
