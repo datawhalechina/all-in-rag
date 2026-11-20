@@ -7,10 +7,17 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 load_dotenv()
 
+aihubmix_api_key = os.getenv("AIHUBMIX_API_KEY")
+if not aihubmix_api_key:
+    raise ValueError(
+        "未检测到 AIHUBMIX_API_KEY，请先参考 docs/chapter1/02_preparation.md "
+        "配置 AIHubmix API 密钥。"
+    )
+
 # 使用 AIHubmix
 Settings.llm = OpenAILike(
     model="glm-4.7-flash-free",
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=aihubmix_api_key,
     api_base="https://aihubmix.com/v1",
     is_chat_model=True
 )
