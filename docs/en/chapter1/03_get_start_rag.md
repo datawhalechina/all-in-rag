@@ -64,7 +64,7 @@ response_metadata={
         'prompt_cache_hit_tokens': 5568,
         'prompt_cache_miss_tokens': 8
     },
-    'model_name': 'deepseek-chat',
+    'model_name': 'deepseek-v4-flash',
     'system_fingerprint': 'fp_8802369eaa_prod0425fp8',
     'id': '67a0580d-78b1-44d6-bccf-f654ae0e9bba',
     'service_tier': None,
@@ -88,7 +88,7 @@ Output parameter explanation:
 - **`additional_kwargs`**: Contains some additional parameters. In this example, it's `{'refusal': None}`, indicating that the model did not refuse to answer.
 - **`response_metadata`**: Contains metadata about the LLM response.
     - `token_usage`: Shows the number of tokens consumed in this call, including completion_tokens, prompt_tokens, and total_tokens.
-    - `model_name`: The name of the LLM model used, currently `deepseek-chat`.
+    - `model_name`: The name of the LLM model used, currently `deepseek-v4-flash`.
     - `system_fingerprint`, `id`, `service_tier`, `finish_reason`, `logprobs`: These are more detailed API response information. For example, `finish_reason: 'stop'` indicates that the model completed generation normally.
 - **`id`**: The unique identifier for this run.
 - **`usage_metadata`**: Similar to `token_usage` in `response_metadata`, providing statistics on input and output tokens.
@@ -105,12 +105,12 @@ First, perform basic configuration, including importing necessary libraries, loa
 import os
 # os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 from dotenv import load_dotenv
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_deepseek import ChatDeepSeek
+from langchain_openai import ChatOpenAI
 
 # Load environment variables
 load_dotenv()
@@ -118,10 +118,10 @@ load_dotenv()
 
 ### 3.2 Data Preparation
 
-- **Load raw documents**: First define the path to the Markdown file, then use `TextLoader` to load the file as a knowledge source.
+- **Load raw documents**: First define the path to the Markdown file, then use `UnstructuredMarkdownLoader` to load the file as a knowledge source.
     ```python
     markdown_path = "../../data/C1/markdown/easy-rl-chapter1.md"
-    loader = TextLoader(markdown_path)
+    loader = UnstructuredMarkdownLoader(markdown_path)
     docs = loader.load()
     ```
 - **Text Chunking**: To facilitate subsequent embedding and retrieval, long documents are split into smaller, manageable text chunks. Here we use a recursive character splitting strategy with its default parameters for chunking. When initializing `RecursiveCharacterTextSplitter()` without specifying parameters, its default behavior aims to preserve the semantic structure of the text to the maximum extent:
@@ -130,7 +130,7 @@ load_dotenv()
     - **Default chunk size and overlap**: Use the default parameters `chunk_size=4000` (chunk size) and `chunk_overlap=200` (chunk overlap) defined in its base class `TextSplitter`. These parameters ensure that text chunks meet predetermined size limits and reduce the loss of contextual information through overlap.
     ```python
     text_splitter = RecursiveCharacterTextSplitter()
-    texts = text_splitter.split_documents(docs)
+    chunks = text_splitter.split_documents(docs)
     ```
 
 ### 3.3 Index Construction
@@ -145,10 +145,10 @@ After data preparation is complete, next build the vector index:
         encode_kwargs={'normalize_embeddings': True}
     )
     ```
-- **Build vector storage**: Convert the split text chunks (`texts`) into vector representations through the initialized embedding model, then use `InMemoryVectorStore` to add these vectors and their corresponding original text content, thereby building a vector index in memory.
+- **Build vector storage**: Convert the split text chunks (`chunks`) into vector representations through the initialized embedding model, then use `InMemoryVectorStore` to add these vectors and their corresponding original text content, thereby building a vector index in memory.
     ```python
     vectorstore = InMemoryVectorStore(embeddings)
-    vectorstore.add_documents(texts)
+    vectorstore.add_documents(chunks)
     ```
     After this process is completed, a queryable knowledge index is built.
 
@@ -188,16 +188,17 @@ The final step is to combine the retrieved context with user questions and use l
     Answer:"""
                                               )
     ```
-- **Configure large language model**: Initialize the `ChatDeepSeek` client, configure the model used (`deepseek-chat`), temperature parameter for generating answers (`temperature=0.7`), maximum number of tokens (`max_tokens=2048`), and API key (loaded from environment variables).
+- **Configure large language model**: Initialize the `ChatOpenAI` client through AIHubmix, configure the model used (`glm-4.7-flash-free`), temperature parameter for generating answers (`temperature=0.7`), maximum number of tokens (`max_tokens=4096`), API key loaded from `AIHUBMIX_API_KEY`, and the AIHubmix base URL.
     ```python
-    llm = ChatDeepSeek(
-        model="deepseek-chat",
+    llm = ChatOpenAI(
+        model="glm-4.7-flash-free",
         temperature=0.7,
-        max_tokens=2048,
-        api_key=os.getenv("DEEPSEEK_API_KEY")
+        max_tokens=4096,
+        api_key=os.getenv("AIHUBMIX_API_KEY"),
+        base_url="https://aihubmix.com/v1"
     )
     ```
-- **Call LLM to generate answer and output**: Format the user question (`question`) and previously prepared context (`docs_content`) into the prompt template, then call ChatDeepSeek's `invoke` method to get the generated answer.
+- **Call LLM to generate answer and output**: Format the user question (`question`) and previously prepared context (`docs_content`) into the prompt template, then call `ChatOpenAI`'s `invoke` method to get the generated answer.
     ```python
     answer = llm.invoke(prompt.format(question=question, context=docs_content))
     print(answer)
@@ -217,17 +218,22 @@ import os
 # os.environ['HF_ENDPOINT']='https://hf-mirror.com'
 from dotenv import load_dotenv
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, Settings
-from llama_index.llms.deepseek import DeepSeek
+from llama_index.llms.openai_like import OpenAILike
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 load_dotenv()
 
-Settings.llm = DeepSeek(model="deepseek-chat", api_key=os.getenv("DEEPSEEK_API_KEY"))
+Settings.llm = OpenAILike(
+    model="glm-4.7-flash-free",
+    api_key=os.getenv("AIHUBMIX_API_KEY"),
+    api_base="https://aihubmix.com/v1",
+    is_chat_model=True
+)
 Settings.embed_model = HuggingFaceEmbedding("BAAI/bge-small-zh-v1.5")
 
-documents = SimpleDirectoryReader(input_files=["../../data/C1/markdown/easy-rl-chapter1.md"]).load_data()
+docs = SimpleDirectoryReader(input_files=["../../data/C1/markdown/easy-rl-chapter1.md"]).load_data()
 
-index = VectorStoreIndex.from_documents(documents)
+index = VectorStoreIndex.from_documents(docs)
 
 query_engine = index.as_query_engine()
 
