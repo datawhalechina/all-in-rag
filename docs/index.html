@@ -167,9 +167,14 @@
             background-color: rgba(255,255,255,0.1);
         }
 
-        /* 标题适配 */
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
-            color: #ffffff; /* 标题纯白 */
+        /* 标题锚点和正文粗体跟随所在段落或标题的颜色 */
+        body.dark-mode .markdown-section :is(h1, h2, h3, h4, h5, h6) {
+            color: #fff;
+        }
+        body.dark-mode .markdown-section .anchor,
+        body.dark-mode .markdown-section .anchor > span,
+        body.dark-mode .markdown-section strong {
+            color: inherit;
         }
         body.dark-mode blockquote {
             color: #b0b0b0;
