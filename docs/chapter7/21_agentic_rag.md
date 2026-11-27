@@ -120,7 +120,24 @@ Agent的力量来自多样化的工具选择。每种工具都有明确的适用
 
 ## 四、端到端实践：基于LangGraph的最小实现
 
-> 配套代码位于 `code/C7/agentic_rag/`，包含完整可运行的Agentic RAG pipeline。
+配套代码位于 `code/C7/agentic_rag/`。请从仓库根目录安装依赖。
+
+```bash
+cd code/C7/agentic_rag
+python -m pip install -r requirements.txt
+```
+
+在当前终端设置问答和生成向量所需的 `OPENAI_API_KEY`，然后启动演示。PowerShell 示例中也列出了可选的 Tavily 配置。
+
+```powershell
+$env:OPENAI_API_KEY = "你的 OpenAI API Key"
+# $env:TAVILY_API_KEY = "你的 Tavily API Key"  # 可选，启用联网检索时取消注释
+python demo.py
+```
+
+在 Bash 中使用 `export OPENAI_API_KEY="你的 OpenAI API Key"` 设置密钥，需要联网检索时再设置 `TAVILY_API_KEY`，随后同样运行 `python demo.py`。
+
+只设置 OpenAI 密钥时，演示使用本地知识库的 `vector_search`。设置 Tavily 密钥后，规划器也可以选择 `web_search`。本节架构图中的 `kg_query` 可作为后续扩展。
 
 ### 4.1 设计思路
 
@@ -129,16 +146,18 @@ Agent的力量来自多样化的工具选择。每种工具都有明确的适用
 **Agent状态图**（5个节点 + 条件路由）：
 
 ```
-START → analyze_query → retrieve → critique ─┬→ generate → END
-                                   ↑          │
-                                   └─ refine ←┘ (质量不足时)
+START → analyze_query → retrieve → critique ─┬→ generate → END（信息充分或达到轮次上限）
+                           ↑                  │
+                           └────── refine  ←──┘（信息不足且可继续检索）
 ```
 
 **关键状态定义**（与传统RAG"一次性输入输出"的本质区别）：
 
 ```python
 class AgentState(TypedDict):
-    query: str                    # 用户问题
+    original_query: str           # 用户问题
+    current_query: str            # 可在每轮之间改写的检索词
+    recommended_tools: List[str]  # 规划阶段选出的工具名称
     retrieval_history: List[dict] # 每轮检索记录(查询/工具/结果/评估)
     collected_docs: List[str]     # 已收集的所有文档(去重)
     critique_result: dict         # 质量评估(relevance/sufficiency/failure_reason)
@@ -148,17 +167,24 @@ class AgentState(TypedDict):
 
 ### 4.2 核心节点实现
 
-**① analyze_query — Agent先分析，再检索**（vs 传统RAG直接检索）：
+**① `analyze_query` — Agent 先分析问题，再从已注册的工具中选择检索方式。** 以下片段简化了实际实现中的 JSON 回退和日志记录。
 
 ```python
 def _analyze_query(self, state):
-    prompt = f"分析问题复杂度，决定检索策略。问题：{state['query']}"
+    available_tools = ", ".join(self.tools)
+    prompt = (
+        f"问题：{state['original_query']}\n"
+        f"可用工具：{available_tools}\n"
+        "用 JSON 返回问题复杂度、初始检索查询 initial_query，以及工具列表 recommended_tools。"
+    )
     response = self.llm.invoke(prompt)
     plan = json.loads(response.content)
-    # {"complexity": "complex", "initial_query": "优化后的初始查询", ...}
     state["current_query"] = plan["initial_query"]
+    state["recommended_tools"] = plan["recommended_tools"]
     return state
 ```
+
+`retrieve` 节点按工具名查找已注册的工具，并将本轮的 `current_query` 传给每个选中的工具。查询改写会更新下一轮的 `current_query`，各轮沿用规划阶段选出的工具列表。
 
 **② critique — 检索质量自评**（Agentic RAG最具革命性的节点）：
 
@@ -188,18 +214,19 @@ def _refine_query(self, state):
 
 ```python
 def _should_continue(self, state):
+    critique = state["critique_result"]
     if state["iteration"] >= state["max_iterations"]:
-        return "max_iter"    # 强制生成（路由到 generate，而不是直接 END）
-    if state["critique_result"]["is_sufficient"]:
-        return "generate"     # 信息充分，生成答案
-    return "refine"           # 不足，改写重试
+        return "max_iter"  # 进入 generate，使用已收集的证据
+    if critique.get("is_sufficient", False) or critique.get("sufficiency_score", 0) >= 7:
+        return "generate"
+    return "refine"
 ```
 
-### 4.3 完整Agentic轨迹
+### 4.3 Agentic RAG 检索轨迹示例
 
-运行下列测试问题，Agent产生的真实轨迹如下：
+演示中的第一道题可以用来观察多轮检索。下图示意启用 Tavily、且规划器同时选择了两个工具时的轨迹。实际工具选择、改写内容、分数和轮数以终端输出为准。
 
-> **问题**："2024年诺贝尔物理学奖得主的研究与化学奖得主的研究之间有什么联系？"
+> 2024 年诺贝尔物理学奖得主的研究与 2024 年诺贝尔化学奖得主的研究之间有什么联系？
 
 ```mermaid
 sequenceDiagram
@@ -214,6 +241,8 @@ sequenceDiagram
     Note over A: Round 1 — 获取物理奖信息
     A->>V: 2024诺贝尔物理学奖 得主 贡献
     V-->>A: Hopfield: 神经网络 / Hinton: 反向传播
+    A->>W: 2024诺贝尔物理学奖 得主 贡献
+    W-->>A: 物理奖相关搜索结果
     A->>A: 📊 充分性 4/10 — 缺化学奖信息
     end
 
@@ -221,14 +250,16 @@ sequenceDiagram
     Note over A: Round 2 — 获取化学奖信息
     A->>V: 2024诺贝尔化学奖 得主
     V-->>A: Baker: Rosetta / Hassabis+Jumper: AlphaFold
+    A->>W: 2024诺贝尔化学奖 得主
+    W-->>A: 化学奖相关搜索结果
     A->>A: 📊 充分性 5/10 — 缺技术关联
     end
 
     rect rgb(243,229,245)
     Note over A: Round 3 — 查询技术关联
     A->>V: 深度学习 AlphaFold 蛋白质 技术关联
-    A->>W: AlphaFold 反向传播 Hinton 影响
     V-->>A: AlphaFold使用Transformer+注意力机制
+    A->>W: 深度学习 AlphaFold 蛋白质 技术关联
     W-->>A: 核心技术依赖反向传播+梯度下降
     A->>A: 📊 充分性 9/10 ✅
     end

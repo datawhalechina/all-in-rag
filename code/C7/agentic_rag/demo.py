@@ -11,9 +11,7 @@ Agentic RAG 完整演示脚本
 运行方式：
     python demo.py
 
-前置条件：
-    export OPENAI_API_KEY="your-key"
-    export TAVILY_API_KEY="your-key"  # 可选，用于web搜索
+README.md 说明了如何设置必需的 OPENAI_API_KEY 和可选的 TAVILY_API_KEY。
 """
 
 import sys
@@ -25,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from langchain_openai import ChatOpenAI
 from agent import AgenticRAG
-from tools import VectorSearchTool, web_search_tool, build_knowledge_base
+from tools import VectorSearchTool, build_knowledge_base, create_web_search_tool
 
 
 # ============================================================
@@ -169,7 +167,7 @@ def main():
     # 检查API密钥
     if not os.environ.get("OPENAI_API_KEY"):
         print("❌ 请设置 OPENAI_API_KEY 环境变量")
-        print("   export OPENAI_API_KEY='sk-...'")
+        print("   PowerShell 和 Bash 中的设置方式见同目录 README.md")
         sys.exit(1)
 
     llm = ChatOpenAI(model="gpt-4o", temperature=0)
@@ -188,7 +186,7 @@ def main():
     # 如果有Tavily API密钥，添加web搜索
     has_web_search = bool(os.environ.get("TAVILY_API_KEY"))
     if has_web_search:
-        tools.append(web_search_tool)
+        tools.append(create_web_search_tool())
         print("  ✅ Web搜索工具已启用")
     else:
         print("  ℹ️  未设置 TAVILY_API_KEY，仅使用向量检索。设置后可启用web搜索。")

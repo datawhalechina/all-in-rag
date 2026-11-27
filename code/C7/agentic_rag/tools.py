@@ -3,15 +3,14 @@ Agentic RAG 工具集
 
 定义了Agent可调用的检索工具，包括：
 - VectorSearchTool: 向量数据库语义检索
-- WebSearchTool: 互联网实时搜索
+- create_web_search_tool: 互联网实时搜索
 
 每个工具的 description 对 Agent 的工具选择决策至关重要。
 """
 
 from typing import List, Optional
-from langchain.tools import tool
 from langchain_community.vectorstores import Chroma
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_core.tools import StructuredTool
 
 
 # ============================================================
@@ -29,9 +28,9 @@ class VectorSearchTool:
 
     def __init__(self, vectorstore: Chroma):
         self.vectorstore = vectorstore
+        self.search = StructuredTool.from_function(self._search, name="vector_search")
 
-    @tool
-    def search(self, query: str, k: int = 5) -> str:
+    def _search(self, query: str, k: int = 5) -> str:
         """
         在本地向量知识库中检索与查询语义相关的文档。
 
@@ -70,17 +69,22 @@ class VectorSearchTool:
 # ============================================================
 # 工具2：Web搜索
 # ============================================================
-web_search_tool = TavilySearchResults(
-    max_results=3,
-    search_depth="advanced",
-    include_answer=True,
-    description=(
-        "在互联网上搜索实时信息。"
-        "适用场景：需要最新新闻、实时数据、近期事件时使用。"
-        "不适用于查询本地知识库中已有的内容。"
-        "输入应为简洁的搜索关键词或短语。"
-    ),
-)
+def create_web_search_tool():
+    """在启用联网检索时构建 Tavily 工具。"""
+    from langchain_community.tools.tavily_search import TavilySearchResults
+
+    return TavilySearchResults(
+        name="web_search",
+        max_results=3,
+        search_depth="advanced",
+        include_answer=True,
+        description=(
+            "在互联网上搜索实时信息。"
+            "适用场景：需要最新新闻、实时数据、近期事件时使用。"
+            "不适用于查询本地知识库中已有的内容。"
+            "输入应为简洁的搜索关键词或短语。"
+        ),
+    )
 
 
 # ============================================================
@@ -109,8 +113,8 @@ def build_knowledge_base(
         Chroma 向量存储实例
     """
     from langchain_openai import OpenAIEmbeddings
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain_core.documents import Document
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,

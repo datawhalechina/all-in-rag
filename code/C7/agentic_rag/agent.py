@@ -158,6 +158,7 @@ class AgenticRAG:
             print(f"\n{'─'*50}")
             print(f"🔍 [分析查询] 分析问题: {state['original_query'][:80]}...")
 
+        available_tools = ", ".join(self.tools)
         analysis_prompt = f"""你是一个智能检索规划助手。分析以下用户问题并制定检索策略。
 
 用户问题：{state['original_query']}
@@ -165,7 +166,7 @@ class AgenticRAG:
 请判断：
 1. 问题复杂度：simple（简单事实型）/ medium（需要一定推理）/ complex（多跳推理或需要多源信息）
 2. 是否需要分解为子问题？如需，请列出子问题及其依赖关系
-3. 推荐使用哪些检索工具？（可选: vector_search, web_search）
+3. 推荐使用哪些检索工具？（可选: {available_tools}）
 4. 初始检索查询应该是什么？（请优化措辞，使其更适合检索）
 
 以 JSON 格式回复（只返回JSON，不要加markdown代码块标记）：

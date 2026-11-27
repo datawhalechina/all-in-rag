@@ -1,18 +1,31 @@
 # Agentic RAG 端到端实践
 
-> 配套教程章节：`docs/chapter7/21_agentic_rag.md`
+> 配套教程见[第七章 Agentic RAG](../../../docs/chapter7/21_agentic_rag.md)。
 
 ## 快速开始
 
+从仓库根目录安装本节依赖。
+
 ```bash
-# 1. 安装依赖
-pip install -r requirements.txt
+cd code/C7/agentic_rag
+python -m pip install -r requirements.txt
+```
 
-# 2. 设置API密钥
-export OPENAI_API_KEY="sk-..."
-export TAVILY_API_KEY="..."  # 可选，用于web搜索
+`OPENAI_API_KEY` 用于模型问答和生成向量。只设置此密钥时，演示从本地知识库执行向量检索。需要联网检索时，再设置 `TAVILY_API_KEY`。
 
-# 3. 运行演示
+PowerShell
+
+```powershell
+$env:OPENAI_API_KEY = "你的 OpenAI API Key"
+# $env:TAVILY_API_KEY = "你的 Tavily API Key"  # 可选
+python demo.py
+```
+
+Bash
+
+```bash
+export OPENAI_API_KEY="你的 OpenAI API Key"
+# export TAVILY_API_KEY="你的 Tavily API Key"  # 可选
 python demo.py
 ```
 
