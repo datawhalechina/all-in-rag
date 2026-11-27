@@ -11,9 +11,7 @@ Agentic RAG 完整演示脚本
 运行方式：
     python demo.py
 
-前置条件：
-    export OPENAI_API_KEY="your-key"
-    export TAVILY_API_KEY="your-key"  # 可选，用于web搜索
+README.md 说明了如何设置必需的 OPENAI_API_KEY 和可选的 TAVILY_API_KEY。
 """
 
 import sys
@@ -169,7 +167,7 @@ def main():
     # 检查API密钥
     if not os.environ.get("OPENAI_API_KEY"):
         print("❌ 请设置 OPENAI_API_KEY 环境变量")
-        print("   export OPENAI_API_KEY='sk-...'")
+        print("   PowerShell 和 Bash 中的设置方式见同目录 README.md")
         sys.exit(1)
 
     llm = ChatOpenAI(model="gpt-4o", temperature=0)
