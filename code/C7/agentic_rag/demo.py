@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from langchain_openai import ChatOpenAI
 from agent import AgenticRAG
-from tools import VectorSearchTool, web_search_tool, build_knowledge_base
+from tools import VectorSearchTool, build_knowledge_base, create_web_search_tool
 
 
 # ============================================================
@@ -188,7 +188,7 @@ def main():
     # 如果有Tavily API密钥，添加web搜索
     has_web_search = bool(os.environ.get("TAVILY_API_KEY"))
     if has_web_search:
-        tools.append(web_search_tool)
+        tools.append(create_web_search_tool())
         print("  ✅ Web搜索工具已启用")
     else:
         print("  ℹ️  未设置 TAVILY_API_KEY，仅使用向量检索。设置后可启用web搜索。")
